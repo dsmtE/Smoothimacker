@@ -26,7 +26,7 @@ Cursor::Cursor() : _position(0,0,0) {
 void Cursor::draw(const openGL::Shader &shader) {
     shader.bind(); // bind shader
     _VAO.bind();
-    glDrawArrays(GL_LINE_STRIP, 0, _vertices.size() * 3);
+    glDrawArrays(GL_LINE_STRIP, 0, _vertices.size());
     _VAO.unbind();
 }
 
@@ -55,34 +55,35 @@ const glm::vec3 v5 = glm::vec3(-1, 1, -1);
 const glm::vec3 v6 = glm::vec3(-1, -1, -1);
 const glm::vec3 v7 = glm::vec3(1, -1, -1);
 
+const glm::vec3 colorVec = glm::vec3(0, 0, 1);
       
 void Cursor::calcVertices() {
 
     
-    _vertices = { //use four CubeVertex per faces
+    _vertices = {
         //front
-        {v0, glm::vec3(0, 1, 0)},
-        {v1, glm::vec3(0, 1, 0)},
-        {v2, glm::vec3(0, 1, 0)},
-        {v3, glm::vec3(0, 1, 0)},
+        {v0, colorVec},
+        {v1, colorVec},
+        {v2, colorVec},
+        {v3, colorVec},
 
         // left
-        {v0, glm::vec3(0, 1, 0)},
-        {v5, glm::vec3(0, 1, 0)},
-        {v6, glm::vec3(0, 1, 0)},
-        {v3, glm::vec3(0, 1, 0)},
+        {v0, colorVec},
+        {v5, colorVec},
+        {v6, colorVec},
+        {v3, colorVec},
 
         // right
-        {v2, glm::vec3(0, 1, 0)},
-        {v7, glm::vec3(0, 1, 0)},
-        {v4, glm::vec3(0, 1, 0)},
-        {v1, glm::vec3(0, 1, 0)},
+        {v2, colorVec},
+        {v7, colorVec},
+        {v4, colorVec},
+        {v1, colorVec},
 
         // back
-        {v4, glm::vec3(0, 1, 0)},
-        {v5, glm::vec3(0, 1, 0)},
-        {v6, glm::vec3(0, 1, 0)},
-        {v7, glm::vec3(0, 1, 0)},
+        {v4, colorVec},
+        {v5, colorVec},
+        {v6, colorVec},
+        {v7, colorVec},
 
     };
 
