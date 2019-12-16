@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   world::Camera c(glm::vec3(0, 0, 5.f));
   App app(500, 500, "test cursor", c);
 
-  openGL::Shader shader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag", true);
+  openGL::Shader shader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag");
 
   world::Cursor cursor; 
 

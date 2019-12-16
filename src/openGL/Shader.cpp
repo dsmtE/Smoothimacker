@@ -8,7 +8,7 @@
 
 using namespace openGL;
 
-Shader::Shader(const char* vertexShader, const char* fragmentShader, const char* geometryShader = nullptr, const bool &fromFile = true) 
+Shader::Shader(const char* vertexShader, const char* fragmentShader, const char* geometryShader, const bool &fromFile) 
     : _programId(0), _vertexId(0), _fragmentId(0), _geometryId(0), _compiled(false) {
 
     std::string vsStr;
@@ -18,8 +18,11 @@ Shader::Shader(const char* vertexShader, const char* fragmentShader, const char*
     if (fromFile) {
         vsStr = parseFile(vertexShader);
         fsStr = parseFile(fragmentShader);
-        if(geometryShader != nullptr)
+        if(geometryShader != nullptr) {
             gsStr = parseFile(geometryShader);
+        } else {
+            gsStr = "";
+        }
     }else {
         vsStr = vertexShader;
         fsStr = fragmentShader;
@@ -36,13 +39,15 @@ Shader::Shader(const char* vertexShader, const char* fragmentShader, const char*
     // compile shaders
     GLCall(_vertexId = compileShader(GL_VERTEX_SHADER, vsStr));
 	GLCall(_fragmentId = compileShader(GL_FRAGMENT_SHADER, fsStr));
-    if (geometryShader != nullptr)
-		GLCall(_geometryId = compileShader(GL_GEOMETRY_SHADER, gsStr));
+    if (geometryShader != nullptr) {
+        GLCall(_geometryId = compileShader(GL_GEOMETRY_SHADER, gsStr));
+    }
 
     AttachShaderId("vertex", _vertexId);
     AttachShaderId("fragment", _fragmentId);
-    if (geometryShader != nullptr)
+    if (geometryShader != nullptr) {
         AttachShaderId("geometry", _geometryId);
+    }
  
     //link them 
 	GLCall(glLinkProgram(_programId));
@@ -83,7 +88,7 @@ Shader::~Shader() {
 
 void Shader::AttachShaderId(const char* shaderName, const GLuint id) {
     if (id != 0) {
-        GLCall(glAttachShader(_programId, _vertexId));
+        GLCall(glAttachShader(_programId, id));
         std::cout << shaderName << " shader attached " << std::endl;
     }
     else {

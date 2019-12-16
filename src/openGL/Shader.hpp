@@ -21,7 +21,6 @@ namespace openGL {
         bool _compiled;
 
         //---------- Methodes ----------//
-        
         GLuint compileShader(const GLenum &shaderType, const std::string &shaderStr);
         std::string parseFile(const char* filepath);
         std::string shaderTypeStr(const GLenum &shaderType);

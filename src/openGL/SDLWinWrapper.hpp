@@ -4,7 +4,7 @@
 
 #include <glm/ext/vector_int2.hpp>
 
-namespace UI {
+namespace openGL {
 
     class SDLWinWrapper {
 

@@ -68,7 +68,7 @@ void Camera::handleEvent(unsigned int deltaTime, glm::vec2 deltaMouse, glm::vec2
 		hasChange = true;
 	}
 	if (deltaMouse.y != 0) {
-		_pitch += deltaMouse.y * _mouseSensitivity;
+		_pitch -= deltaMouse.y * _mouseSensitivity;
 		hasChange = true;
 	}
 	

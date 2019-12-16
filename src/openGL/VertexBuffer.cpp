@@ -18,7 +18,7 @@ void VertexBuffer::unbind() {
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void VertexBuffer::setVertexAttrib(const GLuint &VertexBufferID, const GLuint &size, GLenum &dataType, const GLuint &stride, const GLuint &offset) {
+void VertexBuffer::setVertexAttrib(const GLuint &VertexBufferID, const GLuint &size, GLenum dataType, const GLuint &stride, const GLuint &offset) {
 	GLCall(glEnableVertexAttribArray(VertexBufferID));
 	GLCall(glVertexAttribPointer(
 		VertexBufferID,
@@ -29,7 +29,7 @@ void VertexBuffer::setVertexAttrib(const GLuint &VertexBufferID, const GLuint &s
 		(const GLvoid*)(offset)   // pointer
 	));
 }
-void VertexBuffer::setVertexAttribInteger(GLuint &VertexBufferID,const GLuint &size, GLenum &dataType,const GLuint &stride,const GLuint &offset) {
+void VertexBuffer::setVertexAttribInteger(GLuint &VertexBufferID,const GLuint &size, GLenum dataType,const GLuint &stride,const GLuint &offset) {
 	GLCall(glEnableVertexAttribArray(VertexBufferID));
 	GLCall(glVertexAttribIPointer(
 		VertexBufferID,

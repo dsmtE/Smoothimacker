@@ -16,8 +16,8 @@ Cursor::Cursor() : _position(0,0,0) {
 	_VAO.bind();  // Bind the Vertex Array Object first, then bind VBO and attribute pointer(s).
 
 	_VBO.bind();
-	openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Pos, 3, sizeof(CursorVertex), offsetof(CursorVertex, position));
-    openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Color, 3, sizeof(CursorVertex), offsetof(CursorVertex, color));
+	openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Pos, 3, GL_FLOAT, sizeof(CursorVertex), offsetof(CursorVertex, position));
+    openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Color, 3, GL_FLOAT, sizeof(CursorVertex), offsetof(CursorVertex, color));
 	_VBO.unbind();
 
     _VAO.unbind(); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
@@ -29,7 +29,6 @@ void Cursor::draw(const openGL::Shader &shader) {
     glDrawArrays(GL_LINE_STRIP, 0, _vertices.size() * 3);
     _VAO.unbind();
 }
-
 
 //    v5----- v4
 //   /|      /|

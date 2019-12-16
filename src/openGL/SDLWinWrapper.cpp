@@ -7,7 +7,7 @@
 
 #include <glad/glad.h>
 
-using namespace UI;
+using namespace openGL;
 
 void SDLWinWrapper::initSDL() {
 
