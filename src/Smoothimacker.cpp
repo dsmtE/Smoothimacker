@@ -16,6 +16,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// 
+#include "App.hpp"
+#include "world/Cursor.hpp"
+#include "world/Camera.hpp"
+
 int main(int argc, char *argv[]) {
     
   std::cout << "---------- Smoothimacker ----------" << std::endl;
