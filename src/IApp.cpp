@@ -10,7 +10,7 @@
 #include "openGL/glException.hpp"
 
 IApp::IApp(int width, int height, const char* title) :
-	_running(true), _window(width, height, title), _deltaTime(0), _lastTime(SDL_GetTricks()) {
+	_running(true), _window(width, height, title), _deltaTime(0), _lastTime(SDL_GetTicks()) {
 
 }
 
@@ -34,7 +34,7 @@ void IApp::endFrame() {
 	_window.swapBuffers();
 
 	handleEvents();
-	unsigned int currentTime = SDL_GetTricks();
+	unsigned int currentTime = SDL_GetTicks();
 	_deltaTime = currentTime - _lastTime;
 	_lastTime = currentTime;
 }

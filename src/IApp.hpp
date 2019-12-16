@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gui/SDLWinWrapper.hpp"
+#include "openGL/SDLWinWrapper.hpp"
 
 class IApp {
 protected:
 	// Attributs
-	SDLWinWrapper _window;
+	openGL::SDLWinWrapper _window;
 	bool _running;
 
 	unsigned int _deltaTime;
@@ -28,7 +28,7 @@ public:
 	inline void exit() { _running = false; };
 
 	// get & set
-	inline SDLWinWrapper& getWinWrapper() { return _window; };
+	inline openGL::SDLWinWrapper& getWinWrapper() { return _window; };
 	inline bool isRunning() const { return _running; };
 
 	inline unsigned int getLastTime() const { return _lastTime; };

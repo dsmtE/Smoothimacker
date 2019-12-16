@@ -20,6 +20,7 @@ void App::handleEvents() {
 }
 
 void App::handleSDLEvents(SDL_Event sdlEvent) {
+	_cursor.handleEvent(sdlEvent);
 	switch (sdlEvent.type) {
 	case SDL_QUIT:
 		exit();
@@ -30,15 +31,10 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 		break;
 
 	case SDL_MOUSEMOTION:
-		_deltaMouse = glme::ivec2(sdlEvent.motion.wrel, sdlEvent.motion.yrel);
+		_deltaMouse = glm::ivec2(sdlEvent.motion.xrel, sdlEvent.motion.yrel);
 		break;
 
 	case SDL_KEYDOWN:
-		switch (sdlEvent.key.keysym.sym) {
-
-		default:
-			break;
-		}
 		if (sdlEvent.key.keysym.sym == SDLK_m) {//  M swith mouse lock
 			if (_mouseMode) {
 				_mouseMode = SDL_FALSE;
