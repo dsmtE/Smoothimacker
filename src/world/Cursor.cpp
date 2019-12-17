@@ -99,7 +99,6 @@ void Cursor::handleEvent(SDL_Event sdlEvent) {
     if (sdlEvent.type == SDL_KEYDOWN) {
         if (sdlEvent.key.keysym.sym == SDLK_RIGHT) {
             _position.x += 1;
-            std::cout << _position.x << std::endl;
         }
         if (sdlEvent.key.keysym.sym == SDLK_LEFT) {
             _position.x -= 1;

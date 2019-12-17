@@ -26,8 +26,8 @@ int main(int argc, char *argv[]) {
     
   std::cout << "---------- Test File ----------" << std::endl;
 
-  App app(500, 500, "test cursor");
- 
+  App app(1000, 700, "test cursor");
+
   app.loop();
 
   return 0;

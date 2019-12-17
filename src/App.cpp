@@ -6,7 +6,8 @@
 
 #include <iostream>
 
-App::App(int width, int height, const char* title): IApp(width, height, title), 
+App::App(int width, int height, const char* title) : 
+	IApp(width, height, title),
 	_cam(glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_deltaMouse(0, 0), 
@@ -62,13 +63,17 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 }
 
 void App::loop() {
+	int w = windowSize().x;
+	int h = windowSize().y;
 	while (isRunning()) {
 		beginFrame();
 		_cursorShader.bind();
 		_cursorShader.setMat4("view", _cam.getViewMatrix());
-		_cursorShader.setMat4("projection", _cam.getProjectionMatrix(500, 500));
+		_cursorShader.setMat4("projection", _cam.getProjectionMatrix(w, h));
 		_cursorShader.setMat4("model", _cursor.getModelMatrix());
 		_cursor.draw(_cursorShader);
+		_menu.setCursorPos(_cursor.getPos());
+		_menu.drawMenu();
 		_cursorShader.unBind();
 		endFrame();
 	}
