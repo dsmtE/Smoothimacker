@@ -29,7 +29,6 @@ void IApp::handleEvents() {
 }
 
 void IApp::endFrame() {
-	renderMenu();
 	_window.renderImgui();
 	_window.swapBuffers();
 

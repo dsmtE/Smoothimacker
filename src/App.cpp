@@ -6,8 +6,13 @@
 
 #include <iostream>
 
-App::App(int width, int height, const char* title, const world::Camera& cam)
-	: IApp(width, height, title), _cam(cam), _deltaMouse(0, 0), _deltaWheel(0, 0), _mouseMode(SDL_FALSE) {
+App::App(int width, int height, const char* title): IApp(width, height, title), 
+	_cam(glm::vec3(0, 0, 5.f)),
+	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
+	_deltaMouse(0, 0), 
+	_deltaWheel(0, 0), 
+	_mouseMode(SDL_FALSE) {
+
 	SDL_SetRelativeMouseMode(_mouseMode);
 }
 
@@ -56,6 +61,20 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 	}
 }
 
+void App::loop() {
+	while (isRunning()) {
+		beginFrame();
+		_cursorShader.bind();
+		_cursorShader.setMat4("view", _cam.getViewMatrix());
+		_cursorShader.setMat4("projection", _cam.getProjectionMatrix(500, 500));
+		_cursorShader.setMat4("model", _cursor.getModelMatrix());
+		_cursor.draw(_cursorShader);
+		_cursorShader.unBind();
+		endFrame();
+	}
+}
+
+/*
 void App::renderMenu() {
 	ImGui::Begin("Main debug window");
 
@@ -78,3 +97,4 @@ void App::renderMenu() {
 
 	ImGui::End();
 }
+*/

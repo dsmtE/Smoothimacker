@@ -36,18 +36,28 @@ namespace world {
         openGL::VertexArray _VAO;
         openGL::VertexBuffer _VBO;
 
+        ///
+        ///\brief 
+        ///
         void calcVertices();
 
     public:
 
         Cursor();
         ~Cursor() = default;
-
+        
+        ///
+        ///\brief draw cursor
+        ///\param shader as Shader object 
+        ///
         void draw(const openGL::Shader& shader);
 
         glm::mat4 getModelMatrix() const;
 
-        // input fonctions
+        ///
+        ///\brief 
+        ///\param sdlEvent 
+        ///
         void handleEvent(SDL_Event sdlEvent);
 
     };

@@ -3,6 +3,7 @@
 #include "IApp.hpp"
 #include "world/Camera.hpp"
 #include "world/Cursor.hpp"
+#include "openGL/Shader.hpp"
 
 #include <SDL.h>
 
@@ -11,17 +12,19 @@ private:
 	// attributs
 	world::Camera _cam;
 	world::Cursor _cursor;
+	openGL::Shader _cursorShader;
 	SDL_bool _mouseMode; // handle mouse capture switch
 	glm::vec2 _deltaMouse, _deltaWheel;
 
 	// methods
 	void handleSDLEvents(SDL_Event sdlEvent) override;
 	void handleEvents() override;
-	void renderMenu() override;
 
 public:
+	App(int width, int height, const char* title);
 
-	App(int width, int height, const char* title, const world::Camera &cam);
+	void loop();
+
 	inline world::Camera& getCam() { return _cam; };
 	inline world::Cursor& getCursor() { return _cursor; };
 };

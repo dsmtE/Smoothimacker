@@ -26,22 +26,9 @@ int main(int argc, char *argv[]) {
     
   std::cout << "---------- Test File ----------" << std::endl;
 
-  world::Camera c(glm::vec3(0, 0, 5.f));
-  App app(500, 500, "test cursor", c);
+  App app(500, 500, "test cursor");
+ 
+  app.loop();
 
-  openGL::Shader shader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag");
-
-  world::Cursor cursor; 
-
-  while (app.isRunning()) {
-	  app.beginFrame();
-      shader.bind();
-      shader.setMat4("view", app.getCam().getViewMatrix());
-      shader.setMat4("projection", app.getCam().getProjectionMatrix(500, 500));
-      shader.setMat4("model", app.getCursor().getModelMatrix());
-	  app.getCursor().draw(shader);
-      shader.unBind();
-	  app.endFrame();
-  }
   return 0;
 }

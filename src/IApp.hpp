@@ -14,7 +14,6 @@ protected:
 	// Methodes
 	virtual void handleEvents();
 	virtual void handleSDLEvents(SDL_Event sdlEvent) = 0;
-	virtual void renderMenu() = 0;
 
 public:
 	// Constructor & destructor
