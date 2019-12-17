@@ -71,10 +71,15 @@ void App::loop() {
 		_cursorShader.setMat4("view", _cam.getViewMatrix());
 		_cursorShader.setMat4("projection", _cam.getProjectionMatrix(w, h));
 		_cursorShader.setMat4("model", _cursor.getModelMatrix());
+
 		_cursor.draw(_cursorShader);
+
 		_menu.setCursorPos(_cursor.getPos());
 		_menu.drawMenu();
+		_cursor.setPos(_menu.getCursorPos());
+		
 		_cursorShader.unBind();
+
 		endFrame();
 	}
 }
