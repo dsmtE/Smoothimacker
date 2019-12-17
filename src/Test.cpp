@@ -19,14 +19,13 @@
 
 // 
 #include "App.hpp"
-#include "world/Cursor.hpp"
-#include "world/Camera.hpp"
+
 
 int main(int argc, char *argv[]) {
     
   std::cout << "---------- Test File ----------" << std::endl;
 
-  App app(1000, 700, "test cursor");
+  App app(1000, 700, "test menu");
 
   app.loop();
 
