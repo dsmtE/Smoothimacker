@@ -6,7 +6,7 @@ using namespace world;
 
 
 Camera::Camera(const glm::vec3 &position, const glm::vec3 &worldUp, const float &yaw, const float &pitch) : 
-    _position(position), _worldUp(worldUp), _yaw(yaw), _pitch(pitch), _movementSpeed(SPEED), _mouseSensitivity(SENSITIVITY), _zoom(ZOOM) {
+    _position(position), _worldUp(worldUp), _yaw(yaw), _pitch(pitch), _movementSpeed(SPEED), _mouseSensitivity(SENSITIVITY), _zoom(ZOOM), _hasChanged(false) {
 	updateVectors();
 }
 
@@ -24,57 +24,92 @@ void Camera::updateVectors() {
 	_up = glm::normalize(glm::cross(_right, _front));
 }
 
+void Camera::handleEvents(const unsigned int &deltaTime) {
 
-void Camera::handleEvent(unsigned int deltaTime, glm::vec2 deltaMouse, glm::vec2 deltaWheel) {
-
-	bool hasChange = false;
 	float velocity = _movementSpeed * deltaTime * 0.001f;
-
 	const Uint8* state = SDL_GetKeyboardState(NULL); // get keys state
-   
     
 	// direction keyboard
 	if (state[SDL_GetScancodeFromKey(SDLK_z)]) {
 		_position += _front * velocity;
-		hasChange = true;
-	} else if (state[SDL_GetScancodeFromKey(SDLK_s)]) {
+		_hasChanged = true;
+	}
+	if (state[SDL_GetScancodeFromKey(SDLK_s)]) {
 		_position -= _front * velocity;
-		hasChange = true;
+		_hasChanged = true;
 	}
 	if (state[SDL_GetScancodeFromKey(SDLK_q)]) {
-		hasChange = true;
+		_hasChanged = true;
 		_position -= _right * velocity;
-	} else if (state[SDL_GetScancodeFromKey(SDLK_d)]) {
+	}
+	
+	if (state[SDL_GetScancodeFromKey(SDLK_d)]) {
 		_position += _right * velocity;
-		hasChange = true;
+		_hasChanged = true;
 	}
 
 	if (state[SDL_GetScancodeFromKey(SDLK_SPACE)]) {
 		_position += _up * velocity;
-	}else if (state[SDL_GetScancodeFromKey(SDLK_LSHIFT)]) {
+	}
+	if (state[SDL_GetScancodeFromKey(SDLK_LSHIFT)]) {
 		_position -= _up * velocity;
 	}
-	// zoom
-	if (deltaWheel.y != 0) {
-		_zoom -= deltaWheel.y ;
-        if (_zoom <= 1.0f) _zoom = 1.0f;
-        if (_zoom >= 70.0f) _zoom = 70.0f;
-		hasChange = true;
+
+	// update cam's vectors if needed
+	if (_hasChanged) {
+		updateVectors();
 	}
 
-	// rotation with mouse
-	if (deltaMouse.x != 0) {
-		_yaw += deltaMouse.x * _mouseSensitivity;
-		hasChange = true;
-	}
-	if (deltaMouse.y != 0) {
-		_pitch -= deltaMouse.y * _mouseSensitivity;
-		hasChange = true;
-	}
-	
-	// update cam's vectors if needed
-	if (hasChange) {
-		updateVectors();
+}
+
+void Camera::handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &relativeMouse) {
+
+	switch (sdlEvent.type) {
+		case SDL_MOUSEWHEEL:
+			glm::vec2 deltaWheel = glm::ivec2(sdlEvent.wheel.x, sdlEvent.wheel.y);
+
+			// zoom for projection matrix
+			if (deltaWheel.y != 0) {
+				_zoom -= deltaWheel.y ;
+				if (_zoom <= 1.0f) _zoom = 1.0f;
+				if (_zoom >= 70.0f) _zoom = 70.0f;
+				_hasChanged = true;
+			}
+			
+			break;
+
+		case SDL_MOUSEMOTION:
+			if(relativeMouse == SDL_TRUE || _enableCamRotation == SDL_TRUE) {
+				glm::vec2 deltaMouse = glm::ivec2(sdlEvent.motion.xrel, sdlEvent.motion.yrel);
+
+				// rotation with mouse
+				if (deltaMouse.x != 0) {
+					_yaw += deltaMouse.x * _mouseSensitivity;
+					_hasChanged = true;
+				}
+				if (deltaMouse.y != 0) {
+					_pitch -= deltaMouse.y * _mouseSensitivity;
+					_hasChanged = true;
+				}
+			}
+			break;
+
+		case SDL_MOUSEBUTTONDOWN:
+			if(sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
+				_enableCamRotation = SDL_TRUE;
+				std::cout << "enable CamRotation" << std::endl; 
+			}
+			break;
+
+		case SDL_MOUSEBUTTONUP:
+			if(sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
+				_enableCamRotation = SDL_FALSE;
+				std::cout << "disable CamRotation" << std::endl; 
+			}
+			break;
+
+		default:
+			break;
 	}
 }
 

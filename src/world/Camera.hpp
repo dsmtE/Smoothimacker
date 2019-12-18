@@ -46,6 +46,9 @@ namespace world {
         glm::vec3 _up;
         glm::vec3 _right;
 
+		bool _hasChanged;
+		SDL_bool _enableCamRotation;
+
 	   // Calculates the front vector from the Camera's with Euler Angles
 		void updateVectors();
 
@@ -58,7 +61,8 @@ namespace world {
 		inline float getZoom() const { return _zoom; }
 		
 		// input fonctions
-        void handleEvent(unsigned int deltaTime, glm::vec2 deltaMouse, glm::vec2 deltaWheel);
+        void handleEvents(const unsigned int &deltaTime);
+		void handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &relativeMouse);
 
 
 	};

@@ -4,62 +4,61 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl.h>
 
+#include <glm/gtx/norm.hpp>
+
 #include <iostream>
 
 App::App(int width, int height, const char* title) : 
 	IApp(width, height, title),
 	_cam(glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
-	_deltaMouse(0, 0), 
-	_deltaWheel(0, 0), 
-	_mouseMode(SDL_FALSE) ,
+	_relativeMouse(SDL_FALSE) ,
 	_menu(_cursor.getPointerPos() ) {
-
-	SDL_SetRelativeMouseMode(_mouseMode);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 void App::handleEvents() {
-	IApp::handleEvents();
-	_cam.handleEvent(_deltaTime, _deltaMouse, _deltaWheel);
-	// reset infos (if mouse doesn't move)
-	_deltaMouse = glm::ivec2(0, 0);
-	_deltaWheel = glm::ivec2(0, 0);
+	IApp::handleEvents(); // delegate SDL events to App::handleSDLEvents(SDL_Event sdlEvent)
+	_cam.handleEvents(_deltaTime);
 }
 
 void App::handleSDLEvents(SDL_Event sdlEvent) {
 	_cursor.handleEvent(sdlEvent);
 	_menu.handleEvent(sdlEvent);
+
+	_cam.handleRotationEvents(sdlEvent, _relativeMouse);
+	
+	// application event
 	switch (sdlEvent.type) {
-	case SDL_QUIT:
-		exit();
-		break;
+		case SDL_QUIT:
+			exit();
+			break;
 
-	case SDL_MOUSEWHEEL:
-		_deltaWheel = glm::ivec2(sdlEvent.wheel.x, sdlEvent.wheel.y);
-		break;
-
-	case SDL_MOUSEMOTION:
-		_deltaMouse = glm::ivec2(sdlEvent.motion.xrel, sdlEvent.motion.yrel);
-		break;
-
-	case SDL_KEYDOWN:
-		if (sdlEvent.key.keysym.sym == SDLK_m) {//  M swith mouse lock
-			if (_mouseMode) {
-				_mouseMode = SDL_FALSE;
+		case SDL_KEYUP:
+			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
+				exit();
 			}
-			else { _mouseMode = SDL_TRUE; }
-			SDL_SetRelativeMouseMode(_mouseMode);
-		}
-		else {
-			//printf("Keycode: %s (%d) Scancode: %s (%d) \n",
-			//SDL_GetKeyName(sdlEvent.key.keysym.sym), sdlEvent.key.keysym.sym,
-			//SDL_GetScancodeName(sdlEvent.key.keysym.scancode), sdlEvent.key.keysym.scancode);
-		}
-		break;
+			break;
 
-	default:
-		// std::cout << sdlEvent.type << std::endl;
-		break;
+		case SDL_KEYDOWN:
+			if (sdlEvent.key.keysym.sym == SDLK_r) {
+				if (_relativeMouse) {
+					_relativeMouse = SDL_FALSE;
+				}else {
+					_relativeMouse = SDL_TRUE; 
+				}
+				SDL_SetRelativeMouseMode(_relativeMouse);
+			}
+			else {
+				//printf("Keycode: %s (%d) Scancode: %s (%d) \n",
+				//SDL_GetKeyName(sdlEvent.key.keysym.sym), sdlEvent.key.keysym.sym,
+				//SDL_GetScancodeName(sdlEvent.key.keysym.scancode), sdlEvent.key.keysym.scancode);
+			}
+			break;
+
+		default:
+			// std::cout << sdlEvent.type << std::endl;
+			break;
 
 	}
 }
