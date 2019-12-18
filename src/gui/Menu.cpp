@@ -8,29 +8,42 @@
 
 #include "../world/Cursor.hpp"
 
+
 using namespace gui;
 
 Menu::Menu(glm::ivec3* cursorPointer): _cursorPos(cursorPointer) {};
 
-void Menu::drawTools() {
-	if (ImGui::Button("Create"))
-		std::cout << "create" << std::endl;
-	ImGui::SameLine();
-	if (ImGui::Button("Delete"))
-		std::cout << "delete" << std::endl;
-	ImGui::SameLine();
-	if (ImGui::Button("Extrude"))
-		std::cout << "extrude" << std::endl;
-	ImGui::SameLine();
-	if (ImGui::Button("Dig"))
-		std::cout << "dig" << std::endl;
-
-	ImGui::Spacing();
+void Menu::handleEvent(SDL_Event sdlEvent) {
+	_tool.handleSDLEvents(sdlEvent);
 }
 
-void Menu::paint() {
-	if (ImGui::Button("Paint"))
-		std::cout << "paint" << std::endl;
+void Menu::drawTools() {
+	if (ImGui::Button("Create")) {
+		std::cout << "CREATE" << std::endl;
+		_tool.setStrategy(Create);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Delete")) {
+		std::cout << "DELETE" << std::endl;
+		_tool.setStrategy(Delete);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Extrude")) {
+		std::cout << "EXTRUDE" << std::endl;
+		_tool.setStrategy(Extrude);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Dig")) {
+		std::cout << "DIG" << std::endl;
+		_tool.setStrategy(Dig);
+	}
+
+	ImGui::Spacing();
+
+	if (ImGui::Button("Paint")) {
+		std::cout << "PAINT" << std::endl;
+		_tool.setStrategy(Paint);
+	}
 	const char* items[] = { "BLUE", "RED", "GREEN", "BROWN", "YELLOW", "PURPLE", "GREY" };
 	static int item_current = 0;
 	ImGui::SameLine();
@@ -55,7 +68,6 @@ void Menu::drawMenu() {
 	ImGui::Begin("Tools");
 	
 	Menu::drawTools();
-	Menu::paint();
 	Menu::editCursorPos();
 
 	if (ImGui::Button("Generate map"))

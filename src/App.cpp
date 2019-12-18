@@ -28,6 +28,7 @@ void App::handleEvents() {
 
 void App::handleSDLEvents(SDL_Event sdlEvent) {
 	_cursor.handleEvent(sdlEvent);
+	_menu.handleEvent(sdlEvent);
 	switch (sdlEvent.type) {
 	case SDL_QUIT:
 		exit();
