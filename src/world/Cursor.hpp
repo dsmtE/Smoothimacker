@@ -53,7 +53,7 @@ namespace world {
 
         void handleEvent(SDL_Event sdlEvent);
 
-        inline glm::ivec3 getPos() const { return _position; };
+        inline glm::ivec3* getPointerPos() { return &_position; };
         inline void setPos(const glm::ivec3 p) { _position = p; };
     };
 }

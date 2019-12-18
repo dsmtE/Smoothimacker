@@ -12,7 +12,8 @@ App::App(int width, int height, const char* title) :
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_deltaMouse(0, 0), 
 	_deltaWheel(0, 0), 
-	_mouseMode(SDL_FALSE) {
+	_mouseMode(SDL_FALSE) ,
+	_menu(_cursor.getPointerPos() ) {
 
 	SDL_SetRelativeMouseMode(_mouseMode);
 }
@@ -74,9 +75,7 @@ void App::loop() {
 
 		_cursor.draw(_cursorShader);
 
-		_menu.setCursorPos(_cursor.getPos());
 		_menu.drawMenu();
-		_cursor.setPos(_menu.getCursorPos());
 		
 		_cursorShader.unBind();
 

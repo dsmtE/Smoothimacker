@@ -6,10 +6,11 @@
 
 #include <iostream>
 
+#include "../world/Cursor.hpp"
 
 using namespace gui;
 
-Menu::Menu(): _cursorPos(glm::ivec3(0,0,0)) {};
+Menu::Menu(glm::ivec3* cursorPointer): _cursorPos(cursorPointer) {};
 
 void Menu::drawTools() {
 	if (ImGui::Button("Create"))
@@ -40,9 +41,9 @@ void Menu::paint() {
 
 void Menu::editCursorPos() {
 	ImGui::Text("Cursor position");
-	ImGui::InputInt("X", &_cursorPos.x);
-	ImGui::InputInt("Y", &_cursorPos.y);
-	ImGui::InputInt("Z", &_cursorPos.z);
+	ImGui::InputInt("X", &(_cursorPos->x));
+	ImGui::InputInt("Y", &(_cursorPos->y));
+	ImGui::InputInt("Z", &(_cursorPos->z));
 
 	ImGui::Spacing();
 }

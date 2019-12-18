@@ -8,10 +8,10 @@ namespace gui {
 	class Menu {
 	
 	private:
-		glm::ivec3 &_cursorPos;
+		glm::ivec3* _cursorPos;
 
 	public:
-		Menu();
+		Menu(glm::ivec3* cursorPointer);
 		~Menu() = default;
 
 		void drawTools();
@@ -19,7 +19,6 @@ namespace gui {
 		void editCursorPos();
 		void drawMenu();
 
-		inline glm::ivec3& getCursorPos() const { return _cursorPos; };
-		inline void setCursorPos(const glm::ivec3 &cursorPos) { _cursorPos = cursorPos; };
+		//inline void setPointerCursorPos(glm::ivec3 *cursorPos) { cursorPos = _cursorPos; };
 	};
 }
