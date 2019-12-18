@@ -37,3 +37,9 @@ void IApp::endFrame() {
 	_deltaTime = currentTime - _lastTime;
 	_lastTime = currentTime;
 }
+
+glm::ivec2 IApp::windowSize() const {
+	glm::ivec2 size;
+	SDL_GetWindowSize(_window.getWindow(), &(size.x), &(size.y));
+	return size;
+}

@@ -32,5 +32,7 @@ public:
 
 	inline unsigned int getLastTime() const { return _lastTime; };
 	inline unsigned int getDeltaTime() const { return _deltaTime; };
+	
+	glm::ivec2 windowSize() const;
 
 };

@@ -46,19 +46,14 @@ namespace world {
         Cursor();
         ~Cursor() = default;
         
-        ///
-        ///\brief draw cursor
-        ///\param shader as Shader object 
-        ///
+
         void draw(const openGL::Shader& shader);
 
         glm::mat4 getModelMatrix() const;
 
-        ///
-        ///\brief 
-        ///\param sdlEvent 
-        ///
         void handleEvent(SDL_Event sdlEvent);
 
+        inline glm::ivec3* getPointerPos() { return &_position; };
+        inline void setPos(const glm::ivec3 p) { _position = p; };
     };
 }

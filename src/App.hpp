@@ -4,6 +4,7 @@
 #include "world/Camera.hpp"
 #include "world/Cursor.hpp"
 #include "openGL/Shader.hpp"
+#include "gui/Menu.hpp"
 
 #include <SDL.h>
 
@@ -13,6 +14,7 @@ private:
 	world::Camera _cam;
 	world::Cursor _cursor;
 	openGL::Shader _cursorShader;
+	gui::Menu _menu;
 	SDL_bool _mouseMode; // handle mouse capture switch
 	glm::vec2 _deltaMouse, _deltaWheel;
 
@@ -24,7 +26,8 @@ public:
 	App(int width, int height, const char* title);
 
 	void loop();
-
+	/*
 	inline world::Camera& getCam() { return _cam; };
 	inline world::Cursor& getCursor() { return _cursor; };
+	*/
 };
