@@ -1,7 +1,8 @@
 #pragma once
 
-
 #include <glm/glm.hpp>
+
+#include "Tool.hpp"
 
 namespace gui {
 	
@@ -9,13 +10,15 @@ namespace gui {
 	
 	private:
 		glm::ivec3* _cursorPos;
+		Tool _tool;
 
 	public:
 		Menu(glm::ivec3* cursorPointer);
 		~Menu() = default;
 
+		void handleEvent(SDL_Event sdlEvent);
+
 		void drawTools();
-		void paint();
 		void editCursorPos();
 		void drawMenu();
 
