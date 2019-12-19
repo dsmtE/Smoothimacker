@@ -14,14 +14,14 @@ Cursor::Cursor(const glm::vec3 &color) : _position(0,0,0), _color(color) {
     //  |/      |/
     //  v3------v2
 
-    const glm::vec3 v0 = glm::vec3(-1, 1, 1);
-    const glm::vec3 v1 = glm::vec3(1, 1, 1);
-    const glm::vec3 v2 = glm::vec3(1, -1, 1);
-    const glm::vec3 v3 = glm::vec3(-1, -1, 1);
-    const glm::vec3 v4 = glm::vec3(1, 1, -1);
-    const glm::vec3 v5 = glm::vec3(-1, 1, -1);
-    const glm::vec3 v6 = glm::vec3(-1, -1, -1);
-    const glm::vec3 v7 = glm::vec3(1, -1, -1);
+    const glm::vec3 v0 = glm::vec3(-1, 1, 1) * 0.5f;
+    const glm::vec3 v1 = glm::vec3(1, 1, 1) * 0.5f;
+    const glm::vec3 v2 = glm::vec3(1, -1, 1) * 0.5f;
+    const glm::vec3 v3 = glm::vec3(-1, -1, 1) * 0.5f;
+    const glm::vec3 v4 = glm::vec3(1, 1, -1) * 0.5f;
+    const glm::vec3 v5 = glm::vec3(-1, 1, -1) * 0.5f;
+    const glm::vec3 v6 = glm::vec3(-1, -1, -1) * 0.5f;
+    const glm::vec3 v7 = glm::vec3(1, -1, -1) * 0.5f;
 
     _vertices = {
         //front
