@@ -18,6 +18,9 @@ void Menu::handleEvent(SDL_Event sdlEvent) {
 }
 
 void Menu::drawTools() {
+	
+	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
 	if (ImGui::Button("Create")) {
 		std::cout << "CREATE" << std::endl;
 		_tool.setStrategy(Create);
