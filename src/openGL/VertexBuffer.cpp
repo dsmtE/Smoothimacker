@@ -29,7 +29,7 @@ void VertexBuffer::setVertexAttrib(const GLuint &VertexBufferID, const GLuint &s
 		(const GLvoid*)(offset)   // pointer
 	));
 }
-void VertexBuffer::setVertexAttribInteger(GLuint &VertexBufferID,const GLuint &size, GLenum dataType,const GLuint &stride,const GLuint &offset) {
+void VertexBuffer::setVertexAttribInteger(const GLuint &VertexBufferID,const GLuint &size, GLenum dataType,const GLuint &stride,const GLuint &offset) {
 	GLCall(glEnableVertexAttribArray(VertexBufferID));
 	GLCall(glVertexAttribIPointer(
 		VertexBufferID,

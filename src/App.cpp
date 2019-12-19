@@ -12,9 +12,20 @@ App::App(int width, int height, const char* title) :
 	IApp(width, height, title),
 	_cam(glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
+	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
 	_relativeMouse(SDL_FALSE) ,
-	_menu(_cursor.getPointerPos() ) {
+	_menu(_cursor.getPointerPos()), 
+	_chunk(16) {
 	SDL_SetRelativeMouseMode(SDL_FALSE);
+
+	//fill chunk 
+	for (unsigned int i = 0; i < _chunk.size(); i++) {
+		for (unsigned int j = 0; j < _chunk.size(); j++) {
+			for (unsigned int k = 0; k < _chunk.size(); k++) {
+				_chunk.setCube(i, j, k, j); 
+			}
+		}
+	}
 }
 
 void App::handleEvents() {
@@ -68,36 +79,12 @@ void App::loop() {
 	int h = windowSize().y;
 	while (isRunning()) {
 		beginFrame();
-
-		_cursor.draw(_cam, w, h, _cursorShader);
 		_menu.drawMenu();
+		_chunk.draw(_cam, w, h, _chunkShader);
 
+		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
+		_cursor.draw(_cam, w, h, _cursorShader);
 
 		endFrame();
 	}
 }
-
-/*
-void App::renderMenu() {
-	ImGui::Begin("Main debug window");
-
-	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-	if (ImGui::CollapsingHeader("Help")) {
-		ImGui::Text("Camera controls :");
-		ImGui::BulletText("Orbit - Left mouse button / Middle mouse button");
-		ImGui::BulletText("Pan - Right mouse button");
-		ImGui::BulletText("Zoom - Mousewheel");
-		ImGui::BulletText("Reset - Left mouse double click");
-	}
-
-	ImGui::Spacing();
-
-	ImGui::Text("Exemples:");
-	if (ImGui::CollapsingHeader("Basic")) {
-		if (ImGui::Button("test Button")) { std::cout << "test boutton " << std::endl; }
-	}
-
-	ImGui::End();
-}
-*/

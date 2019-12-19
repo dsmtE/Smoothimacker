@@ -1,9 +1,11 @@
 #pragma once
 
 #include "IApp.hpp"
+
 #include "world/Camera.hpp"
 #include "world/Cursor.hpp"
 #include "openGL/Shader.hpp"
+#include "world/Chunk.hpp"
 #include "gui/Menu.hpp"
 
 #include <SDL.h>
@@ -14,6 +16,8 @@ private:
 	world::Camera _cam;
 	world::Cursor _cursor;
 	openGL::Shader _cursorShader;
+	openGL::Shader _chunkShader;
+	world::Chunk _chunk;
 	gui::Menu _menu;
 
 	SDL_bool _relativeMouse; // handle mouse rotation with mouse
