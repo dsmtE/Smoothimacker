@@ -12,18 +12,17 @@
 #include "../openGL/ElementBuffer.hpp"
 #include "../openGL/VertexBuffer.hpp"
 #include "../openGL/VertexArray.hpp"
+
 #include "../openGL/Shader.hpp"
+#include "../world/Camera.hpp"
 
 namespace world {
 
     struct CursorVertex {
         glm::vec3 position;
-        glm::vec3 color;
 
         CursorVertex() = default;
-        CursorVertex(glm::vec3 const &p, glm::vec3 const &c)
-            : position(p), color(c){
-        }
+        CursorVertex(glm::vec3 const &p) : position(p) {}
     };
 
     class Cursor {
@@ -32,24 +31,19 @@ namespace world {
 
         std::vector<CursorVertex> _vertices;
         glm::ivec3 _position;
+        glm::vec3 _color;
 
         openGL::VertexArray _VAO;
         openGL::VertexBuffer _VBO;
 
-        ///
-        ///\brief 
-        ///
-        void calcVertices();
-
     public:
 
-        Cursor();
+        Cursor(const glm::vec3 &color = glm::vec3(0, 0, 1));
         ~Cursor() = default;
         
+        void draw(const world::Camera &cam, const int& screenWidth, const int& screenHeigh, openGL::Shader &shader);
 
-        void draw(const openGL::Shader& shader);
-
-        glm::mat4 getModelMatrix() const;
+        glm::mat4 modelMatrix() const;
 
         void handleEvent(SDL_Event sdlEvent);
 

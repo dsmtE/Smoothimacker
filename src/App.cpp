@@ -68,16 +68,10 @@ void App::loop() {
 	int h = windowSize().y;
 	while (isRunning()) {
 		beginFrame();
-		_cursorShader.bind();
-		_cursorShader.setMat4("view", _cam.getViewMatrix());
-		_cursorShader.setMat4("projection", _cam.getProjectionMatrix(w, h));
-		_cursorShader.setMat4("model", _cursor.getModelMatrix());
 
-		_cursor.draw(_cursorShader);
-
+		_cursor.draw(_cam, w, h, _cursorShader);
 		_menu.drawMenu();
-		
-		_cursorShader.unBind();
+
 
 		endFrame();
 	}

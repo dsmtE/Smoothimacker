@@ -4,92 +4,63 @@
 
 using namespace world;
 
-Cursor::Cursor() : _position(0,0,0) {
+Cursor::Cursor(const glm::vec3 &color) : _position(0,0,0), _color(color) {
 
-    calcVertices(); // construct _vertices & normal
+    //    v5----- v4
+    //   /|      /|
+    //  v0------v1|
+    //  | |     | |
+    //  | |v6---|-|v7
+    //  |/      |/
+    //  v3------v2
+
+    const glm::vec3 v0 = glm::vec3(-1, 1, 1);
+    const glm::vec3 v1 = glm::vec3(1, 1, 1);
+    const glm::vec3 v2 = glm::vec3(1, -1, 1);
+    const glm::vec3 v3 = glm::vec3(-1, -1, 1);
+    const glm::vec3 v4 = glm::vec3(1, 1, -1);
+    const glm::vec3 v5 = glm::vec3(-1, 1, -1);
+    const glm::vec3 v6 = glm::vec3(-1, -1, -1);
+    const glm::vec3 v7 = glm::vec3(1, -1, -1);
+
+    _vertices = {
+        //front
+        v0, v1, v2, v3,
+        // left
+        v0, v5, v6, v3,
+        // right
+        v2, v7, v4, v1,
+        // back
+        v4, v5, v6, v7,
+    };
 	
 	_VBO.setData<CursorVertex>(_vertices, GL_STATIC_DRAW);
 
     const GLuint vertexAttrib_Pos = 0;
-    const GLuint vertexAttrib_Color = 1;
 	
 	_VAO.bind();  // Bind the Vertex Array Object first, then bind VBO and attribute pointer(s).
 
 	_VBO.bind();
 	openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Pos, 3, GL_FLOAT, sizeof(CursorVertex), offsetof(CursorVertex, position));
-    openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Color, 3, GL_FLOAT, sizeof(CursorVertex), offsetof(CursorVertex, color));
 	_VBO.unbind();
 
     _VAO.unbind(); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
 }
 
-void Cursor::draw(const openGL::Shader &shader) {
-    shader.bind(); // bind shader
+void Cursor::draw(const world::Camera &cam, const int& screenWidth, const int& screenHeigh, openGL::Shader &shader) {
+    shader.bind();
+    // send uniform to shader
+    shader.setVec3f("cursorColor", _color);
+    shader.setMat4("MVPMatrix", cam.PVMatrix(screenWidth, screenHeigh) * modelMatrix());
+
     _VAO.bind();
     glDrawArrays(GL_LINE_STRIP, 0, _vertices.size());
     _VAO.unbind();
+
+    shader.unBind();
 }
-
-//    v5----- v4
-//   /|      /|
-//  v0------v1|
-//  | |     | |
-//  | |v6---|-|v7
-//  |/      |/
-//  v3------v2
-//
-//        (Y)
-//         ^
-//         |
-//         .---->(X)
-//        /
-//       v
-//     (Z)
-//     
-const glm::vec3 v0 = glm::vec3(-1, 1, 1);
-const glm::vec3 v1 = glm::vec3(1, 1, 1);
-const glm::vec3 v2 = glm::vec3(1, -1, 1);
-const glm::vec3 v3 = glm::vec3(-1, -1, 1);
-const glm::vec3 v4 = glm::vec3(1, 1, -1);
-const glm::vec3 v5 = glm::vec3(-1, 1, -1);
-const glm::vec3 v6 = glm::vec3(-1, -1, -1);
-const glm::vec3 v7 = glm::vec3(1, -1, -1);
-
-const glm::vec3 colorVec = glm::vec3(0, 0, 1);
       
-void Cursor::calcVertices() {
-
-    
-    _vertices = {
-        //front
-        {v0, colorVec},
-        {v1, colorVec},
-        {v2, colorVec},
-        {v3, colorVec},
-
-        // left
-        {v0, colorVec},
-        {v5, colorVec},
-        {v6, colorVec},
-        {v3, colorVec},
-
-        // right
-        {v2, colorVec},
-        {v7, colorVec},
-        {v4, colorVec},
-        {v1, colorVec},
-
-        // back
-        {v4, colorVec},
-        {v5, colorVec},
-        {v6, colorVec},
-        {v7, colorVec},
-
-    };
-
-}
-
-glm::mat4 Cursor::getModelMatrix() const {
+glm::mat4 Cursor::modelMatrix() const {
     glm::mat4 m(1.0f);
     m = glm::translate(m, glm::vec3(_position));
     return m;
