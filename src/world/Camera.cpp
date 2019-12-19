@@ -113,6 +113,15 @@ void Camera::handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &rel
 	}
 }
 
-glm::mat4 Camera::getProjectionMatrix(const float& screenWidth, const float& screenHeigh) const { 
-	return glm::perspective(glm::radians(_zoom), screenWidth  / screenHeigh, 0.1f, 100.0f);
+
+glm::mat4 Camera::PVMatrix(const int& screenWidth, const int& screenHeigh) const {
+	return projectionMatrix(screenWidth, screenHeigh) * viewMatrix();
+}
+
+glm::mat4 Camera::projectionMatrix(const int& screenWidth, const int& screenHeigh) const { 
+	return glm::perspective(glm::radians(_zoom), float(screenWidth)  / float(screenHeigh), 0.1f, 100.0f);
+}
+
+glm::mat4 Camera::viewMatrix() const { 
+	return glm::lookAt(_position, _position + _front, _up); 
 }

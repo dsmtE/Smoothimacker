@@ -28,7 +28,6 @@ namespace world {
 	const float SENSITIVITY = 0.2f;
 	const float ZOOM = 45.0f;
 
-
 	class Camera {
 
 	private:
@@ -56,8 +55,9 @@ namespace world {
 		// Constructor with vectors
 		Camera(const glm::vec3 &position = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3 &worldUp = glm::vec3(0.0f, 1.0f, 0.0f), const float &yaw = YAW, const float &pitch = PITCH);
 
-		inline glm::mat4 getViewMatrix() const { return glm::lookAt(_position, _position + _front, _up); }
-		glm::mat4 getProjectionMatrix(const float& screenWidth, const float& screenHeigh) const;
+		glm::mat4 viewMatrix() const;
+		glm::mat4 projectionMatrix(const int& screenWidth, const int& screenHeigh) const;
+		glm::mat4 PVMatrix(const int& screenWidth, const int& screenHeigh) const;
 		inline float getZoom() const { return _zoom; }
 		
 		// input fonctions
