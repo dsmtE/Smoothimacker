@@ -37,7 +37,7 @@ namespace openGL {
         }
         
 		static void setVertexAttrib(const GLuint &VertexBufferID, const GLuint &size, GLenum dataType, const GLuint &stride, const GLuint &offset);
-		static void setVertexAttribInteger(GLuint &VertexBufferID,const GLuint &size, GLenum dataType,const GLuint &stride,const GLuint &offset);
+		static void setVertexAttribInteger(const GLuint &VertexBufferID,const GLuint &size, GLenum dataType,const GLuint &stride,const GLuint &offset);
 		static void setAttribDivisor(const GLuint &index, const GLubyte &divisor);
 
         //---------- getters/setters ----------//
