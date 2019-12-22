@@ -6,30 +6,32 @@
 
 using namespace imath;
 
-unsigned int RadialBasisFunction::gaussian(float d, float alpha) {
+float rbf::gaussian(float d, float alpha) {
 	return exp(alpha * d * d);
 }
 
-unsigned int RadialBasisFunction::linear(float d, float alpha) {
+float rbf::linear(float d, float alpha) {
 	return alpha * d;
 }
 
-unsigned int RadialBasisFunction::inverseQuadri(float d, float alpha) {
+float rbf::inverseQuadri(float d, float alpha) {
 	return 1 / (1 + pow((alpha * d), 2));
 }
 
-float RadialBasisFunction::dist(Eigen::Vector2f p1, Eigen::Vector2f p2) {
-	return sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2));
+float rbf::dist(const Eigen::Vector2f &p1, const Eigen::Vector2f &p2) {
+	// return sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2));
+	return (p1-p2).norm(); // Eigen does it better than us
 }
 
-Eigen::VectorXd RadialBasisFunction::computeOmega(Eigen::Matrix3f X, Eigen::VectorXd u) {
-	ColPivHouseholderQR<Matrix3f> dec(X);
-	return dec.solve(u);
+Eigen::VectorXf rbf::computeOmega(const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values , float radialFunction(float, float)) {
+	// TODO build A with controle_pts (cf cours)
+	Eigen::MatrixXf A;
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXf> dec(A);
+	return dec.solve(controle_pts_Values);
 }
 
-Eigen::VectorXd RadialBasisFunction::phi(Eigen::Matrix3f X, Eigen::VectorXd u) {
-	Eigen::VectorXd wk = computeOmega(X, u);
-
-	// return sum phi
-	// return [[ np.sum([wk_ * rbf(dist2D(p, pk_)) for pk_, wk_ in temp]) for p in line]for line in pts]
+Eigen::VectorXf  rbf::interpolate(const std::vector<Eigen::Vector2f> &evaluation_pts, const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values, float radialFunction(float, float)) {
+	Eigen::VectorXf w = rbf::computeOmega(controle_pts, controle_pts_Values , radialFunction);
+	// TODO return value at evaluation_pts with sum fonction
 }
+

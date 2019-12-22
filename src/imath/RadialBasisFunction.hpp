@@ -1,24 +1,21 @@
 #pragma once
 
-#include "../world/Octree.hpp"
+#include "../world/Chunk.hpp"
 
-namespace imath {
+//unsing namestapce insted of class
+namespace imath::rbf {
+        
+    // radial fonctions
+    float gaussian(float dist, float alpha);
+    float linear(float dist, float alpha);
+    float inverseQuadri(float dist, float alpha);
+    //distance functions
+    float dist(const Eigen::Vector2f &p1, const Eigen::Vector2f &p2);
 
-    class RadialBasisFunction {
+    Eigen::VectorXf computeOmega(const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values , float radialFunction(float, float));
 
-    private:
-        world::Octree _octree;
-    public:
+    // change the name to make it more meaningful
+    Eigen::VectorXf interpolate(const std::vector<Eigen::Vector2f> &evaluation_pts, const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values, float radialFunction(float, float));
 
-        RadialBasisFunction() = default;
-        ~RadialBasisFunction() = default;
-
-        unsigned int gaussian(float d, float alpha);
-        unsigned int linear(float d, float alpha);
-        unsigned int inverseQuadri(float d, float alpha);
-        float dist(Eigen::Vector2f p1, Eigen::Vector2f p2);
-        Eigen::VectorXd computeOmega(Eigen::Matrix3f X, Eigen::VectorXd u);
-        Eigen::VectorXd phi(Eigen::Matrix3f X, Eigen::VectorXd u);
-
-    };
+    void generateTerrain(world::Chunk &c, float rf(float, float)); // TODO
 }
