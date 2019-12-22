@@ -10,17 +10,18 @@
 #include "../openGL/Shader.hpp"
 
 #include "Camera.hpp"
-
+#include "Octree.hpp"
+#include "../imath/util.hpp"
 
 namespace world {
 
 	struct CubeVertex {
-		uint16_t indexInChunk; // max 
+		glm::uvec3 pos;
 		uint8_t type;
 		uint8_t faceMask;
 
 		CubeVertex() = default;
-		CubeVertex(const uint16_t& i, const uint8_t& t, const uint8_t& m) : indexInChunk(i), type(t), faceMask(m) {}
+		CubeVertex(const glm::uvec3& p, const uint8_t& t, const uint8_t& m) : pos(p), type(t), faceMask(m) {}
 	};
 
 	enum Direction { Up, Down, Left, Right, Front, Back };
@@ -30,7 +31,7 @@ namespace world {
 	private:
         //---------- Attributes ----------//
 
-		std::vector<CubeVertex*> _cubes; // array of fixed size of pointer CubeVertex 
+		Octree<uint8_t> _cubesType; // octree of type
 		std::vector<CubeVertex> _mesh; // send it to GPU with only used CubeVertex in cubes (copy of original Cubes in _cubes)
 
         bool needRemesh;
@@ -45,31 +46,33 @@ namespace world {
         // VAO build called in constructor
         void buildVAO();
 
+		//privates methods used in mesh Reconstruction // TODO
 		std::vector<std::pair<Direction, CubeVertex*>> getAdjacentsCube(const uint16_t& id);
 		void updateCubeMask(const uint16_t &id);
 		void updateCubeMaskAndAdjacents(const uint16_t& id);
 
+		void updateMesh(const glm::uvec3 &pos, const uint8_t &type);
+		void buildMesh();
+		void setVBOdata();
+
         // check if the coordinates are within the limits
         bool validCoordinate(const glm::uvec3 &pos) const;
 
+		// index <=> coordinate convertion functions  (deprecated)
+		glm::uvec3 indexToCoord(const uint16_t &id) const;
+        uint16_t coordToIndex(const glm::uvec3 &pos) const;
+
 	public:
 
-		Chunk(const uint8_t &size, const glm::uvec3 &pos = glm::uvec3(0,0,0));
-		~Chunk();
+		Chunk(const unsigned int &depth = 0, const glm::uvec3 &pos = glm::uvec3(0,0,0));
+		~Chunk() = default;
 
         //---------- Methods ----------//
 
 		void draw(const Camera &c, const int& screenWidth, const int& screenHeigh, openGL::Shader &s);
-		
-		void buildMesh();
-		void setVBOdata();
-
-        // index <=> coordinate convertion functions
-		glm::uvec3 indexToCoord(const uint16_t &id) const;
-        uint16_t coordToIndex(const glm::uvec3 &pos) const;
 
         // cubes setters and getters
-        CubeVertex* getCube(const glm::uvec3 &pos);
+        uint8_t* getCubeType(const glm::uvec3 &pos) const;
 		void setCube(const glm::uvec3 &pos, const uint8_t &type);
         void delCube(const glm::uvec3 &pos);
 
@@ -85,9 +88,9 @@ namespace world {
         void updateAllCubesMask();
 
         //---------- Compatibility fonction ----------//
-        inline uint16_t coordToIndex(const uint8_t &x, const uint8_t &y, const uint8_t &z) const {coordToIndex(glm::uvec3(x, y, z));}
-        inline CubeVertex* getCube(const uint8_t &x, const uint8_t &y, const uint8_t &z) { return getCube(glm::uvec3(x, y, z));}
-		inline void setCube(const uint8_t &x, const uint8_t &y, const uint8_t &z, const uint8_t &type) {setCube(glm::uvec3(x, y, z), type); }
-        inline bool validCoordinate(const uint8_t& x, const uint8_t& y, const uint8_t& z) const {validCoordinate(glm::uvec3(x, y, z));}
+        inline uint16_t coordToIndex(const unsigned int &x, const unsigned int &y, const unsigned int &z) const {coordToIndex(glm::uvec3(x, y, z));}
+        inline CubeVertex* getCube(const unsigned int &x, const unsigned int &y, const unsigned int &z) { return getCube(glm::uvec3(x, y, z));}
+		inline void setCube(const unsigned int &x, const unsigned int &y, const unsigned int &z, const unsigned int &type) {setCube(glm::uvec3(x, y, z), type); }
+        inline bool validCoordinate(const unsigned int& x, const unsigned int& y, const unsigned int& z) const {validCoordinate(glm::uvec3(x, y, z));}
 	};
 }

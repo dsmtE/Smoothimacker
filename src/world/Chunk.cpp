@@ -6,17 +6,10 @@
 
 using namespace world;
 
-Chunk::Chunk(const uint8_t &size, const glm::uvec3 &pos) : _size(size), _position(pos), _cubes(size*size*size, nullptr), needRemesh(false) {
+Chunk::Chunk(const unsigned int &depth, const glm::uvec3 &pos) : _size(1 << depth), _position(pos), _cubesType(depth), needRemesh(false) {
 	// limit chunk size
-    assert(_size < 36);
+    assert(depth <= 8); // limit chunk by (2^8)^3 = 16777216 elements 
 	buildVAO();
-}
-
-Chunk::~Chunk() {
-	std::for_each(_cubes.begin(), _cubes.end(), [](CubeVertex* c) {
-		if (c != nullptr)
-			delete c;
-	});
 }
 
 bool Chunk::validCoordinate(const glm::uvec3 &pos) const {
@@ -24,12 +17,12 @@ bool Chunk::validCoordinate(const glm::uvec3 &pos) const {
 }
 
 void Chunk::buildVAO() {
-		const GLuint indexInChunck = 0;
+		const GLuint pos = 0;
 		const GLuint type = 1;
 		const GLuint faceMask = 2;
 		_VAO.bind();
 		_VBO.bind();
-		openGL::VertexBuffer::setVertexAttribInteger(indexInChunck, 1, GL_UNSIGNED_SHORT, sizeof(CubeVertex), offsetof(CubeVertex, indexInChunk));
+		openGL::VertexBuffer::setVertexAttribInteger(pos, 3, GL_UNSIGNED_INT, sizeof(CubeVertex), offsetof(CubeVertex, pos));
 		openGL::VertexBuffer::setVertexAttribInteger(type, 1, GL_UNSIGNED_BYTE, sizeof(CubeVertex), offsetof(CubeVertex, type));
 		openGL::VertexBuffer::setVertexAttribInteger(faceMask, 1, GL_UNSIGNED_BYTE, sizeof(CubeVertex), offsetof(CubeVertex, faceMask));
 		_VBO.unbind();
@@ -41,14 +34,20 @@ void Chunk::setVBOdata() {
 		_VBO.setData<CubeVertex>(_mesh, GL_STREAM_DRAW);
 	}
 }
-void Chunk::buildMesh() {
-	_mesh.clear();
-	for (CubeVertex* const &c : _cubes) {
-		if (c != nullptr)
-			_mesh.push_back(*c);
-	}
+
+void Chunk::updateMesh(const glm::uvec3 &pos, const uint8_t &type) {
+	// TODO
+	//  update our mesh
+	// TODO get adjacent type from octree and update faceMask
+	// update adjacent faceMask 
+	//  -> & VBO using setSubData
 }
 
+void Chunk::buildMesh() {
+	// TODO
+	_mesh.clear();
+}
+/*
 std::vector<std::pair<Direction, CubeVertex*>> Chunk::getAdjacentsCube(const uint16_t &id) {	
 	std::vector<std::pair<Direction, CubeVertex*>> existingCubes;
 	existingCubes.reserve(6); // max 6 elements, reserve allow us to use emplace_back
@@ -181,14 +180,7 @@ void Chunk::updateCubeMask(const uint16_t &id) {
 		}
 	}
 }
-
-void Chunk::updateAllCubesMask() {
-	for (uint16_t i = 0; i < _cubes.size(); i++) {
-		if (_cubes[i] != nullptr) {
-			updateCubeMask(i);
-		}
-	}
-}
+*/
 
 //        (Z)
 //         ^
@@ -228,33 +220,26 @@ void Chunk::draw(const world::Camera &c, const int& screenWidth, const int& scre
 	}
 }
 
-CubeVertex* Chunk::getCube(const glm::uvec3 &pos) {
-	if (validCoordinate(pos)) {
-		return _cubes[coordToIndex(pos)];
-	}
-	return nullptr;
+uint8_t* Chunk::getCubeType(const glm::uvec3 &pos) const {
+	return _cubesType.getValue(pos);
 }
 
 void Chunk::setCube(const glm::uvec3 &pos, const uint8_t &type) {
-	const uint16_t id = coordToIndex(pos);
-	if (_cubes[id] == nullptr) {
-		_cubes[id] = new CubeVertex(id, type, 255);
-	} else {
-		_cubes[id]->type = type;
+	uint8_t* actualType = _cubesType.getValue(pos);
+	if ( _cubesType.setValue(pos, type)) { // if this modify our Octree
+		if (actualType != nullptr) {
+			updateMesh(pos, type); // just update our mesh
+		}else { // else if nullptr have been set we need to reconstruct mesh
+			needRemesh = true;
+		}
+		
 	}
-
-    updateCubeMaskAndAdjacents(id);
-    needRemesh = true;
 }
 
 void Chunk::delCube(const glm::uvec3 &pos) {
-    const uint16_t id = coordToIndex(pos);
-	if (_cubes[id] != nullptr) {
-        delete _cubes[id];
-		_cubes[id] = nullptr;
-    }
-    updateCubeMaskAndAdjacents(id);
-    needRemesh = true;
+	if ( _cubesType.delValue(pos) ) {
+    	needRemesh = true; // if one value was deleted, we need to reconstruct mesh
+	}
 }
 
 glm::mat4 Chunk::getModelMatrix() const {
