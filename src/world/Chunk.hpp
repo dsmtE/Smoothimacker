@@ -11,7 +11,7 @@
 
 #include "Camera.hpp"
 #include "Octree.hpp"
-#include "../imath/util.hpp"
+// #include "../imath/util.hpp"
 
 namespace world {
 
@@ -47,7 +47,9 @@ namespace world {
         void buildVAO();
 
 		//privates methods used in mesh Reconstruction // TODO
-		std::vector<std::pair<Direction, CubeVertex*>> getAdjacentsCube(const uint16_t& id);
+		glm::uvec3 mortonIdToPos(const uint8_t &id) const;
+		glm::uvec3 getPositionFromOctreeSubIndex(const std::vector<uint8_t> &OSubId) const;
+		std::vector<std::pair<Direction, uint8_t*>> getAdjacentsCube(const glm::uvec3 &pos);
 		void updateCubeMask(const uint16_t &id);
 		void updateCubeMaskAndAdjacents(const uint16_t& id);
 
@@ -87,10 +89,12 @@ namespace world {
 
         void updateAllCubesMask();
 
-        //---------- Compatibility fonction ----------//
+        //---------- Compatibility fonctions ----------//
+		/*
         inline uint16_t coordToIndex(const unsigned int &x, const unsigned int &y, const unsigned int &z) const {coordToIndex(glm::uvec3(x, y, z));}
         inline CubeVertex* getCube(const unsigned int &x, const unsigned int &y, const unsigned int &z) { return getCube(glm::uvec3(x, y, z));}
 		inline void setCube(const unsigned int &x, const unsigned int &y, const unsigned int &z, const unsigned int &type) {setCube(glm::uvec3(x, y, z), type); }
         inline bool validCoordinate(const unsigned int& x, const unsigned int& y, const unsigned int& z) const {validCoordinate(glm::uvec3(x, y, z));}
+		*/
 	};
 }

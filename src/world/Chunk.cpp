@@ -6,6 +6,9 @@
 
 using namespace world;
 
+// 	glm::vec3 c = glm::floor(_pos/glm::vec3(chunkSize));
+//   glm::vec3 p = glm::mod(_pos, glm::vec3(chunkSize));
+
 Chunk::Chunk(const unsigned int &depth, const glm::uvec3 &pos) : _size(1 << depth), _position(pos), _cubesType(depth), needRemesh(false) {
 	// limit chunk size
     assert(depth <= 8); // limit chunk by (2^8)^3 = 16777216 elements 
@@ -13,7 +16,7 @@ Chunk::Chunk(const unsigned int &depth, const glm::uvec3 &pos) : _size(1 << dept
 }
 
 bool Chunk::validCoordinate(const glm::uvec3 &pos) const {
-	return pos.x < _size && pos.y < _size && pos.z < _size;
+	return glm::all(glm::lessThan(pos, glm::uvec3( _size )));
 }
 
 void Chunk::buildVAO() {
@@ -35,48 +38,94 @@ void Chunk::setVBOdata() {
 	}
 }
 
+glm::uvec3 Chunk::mortonIdToPos(const uint8_t &id) const {
+	return glm::uvec3(id % 2, id / 4, (id / 2) % 2);
+}
+
+glm::uvec3 Chunk::getPositionFromOctreeSubIndex(const std::vector<uint8_t> &OSubId) const {
+	glm::uvec3 pos(0, 0, 0);
+	for (unsigned int i = 0; i < OSubId.size(); i++) {
+		pos += mortonIdToPos(OSubId[i]) * ( unsigned int(size()) >> (i+1) );
+	}
+	return pos;
+}
+
+void Chunk::buildMesh() {
+	_mesh.clear();
+	_mesh.reserve(1 << _cubesType.size());
+
+	//  iterate through Octree and add value
+	Octree<uint8_t>* workOctree = &_cubesType; // begin from root Octree
+
+	std::vector<uint8_t> OctreeSubIndex; // store subIndex checked at each subLevel
+	OctreeSubIndex.reserve(_cubesType.depth());
+	OctreeSubIndex.push_back(0);
+
+	while (OctreeSubIndex[0] < 8) { // until we visit all subOctree
+		if( workOctree->isLeaf() ) {
+			uint8_t* val = workOctree->getValue();
+			if (val != nullptr) {
+				_mesh.push_back(CubeVertex( getPositionFromOctreeSubIndex(OctreeSubIndex), *val, 255 ) );
+			}
+		}
+		// next subIndex
+		OctreeSubIndex.back()++;
+		while (OctreeSubIndex.back() >= 8 && OctreeSubIndex[0] < 8) {
+			OctreeSubIndex.pop_back();
+			OctreeSubIndex.back()++;
+		}
+	}
+	// mesh done with all non null value of subOctree
+}
+
+/*
+
 void Chunk::updateMesh(const glm::uvec3 &pos, const uint8_t &type) {
 	// TODO
 	//  update our mesh
 	// TODO get adjacent type from octree and update faceMask
 	// update adjacent faceMask 
 	//  -> & VBO using setSubData
+
+	std::vector<std::pair<Direction, CubeVertex*>> cubes = getAdjacentsCube(pos);
+	CubeVertex* c = nullptr;
+	for (CubeVertex c : _mesh) {
+		if (c.pos == pos)
+	}
+
+	
+    if (c != nullptr) {
+        c->faceMask = 0x3F; // makes all sides visible (0b00111111)
+    }
 }
 
-void Chunk::buildMesh() {
-	// TODO
-	_mesh.clear();
-}
-/*
-std::vector<std::pair<Direction, CubeVertex*>> Chunk::getAdjacentsCube(const uint16_t &id) {	
-	std::vector<std::pair<Direction, CubeVertex*>> existingCubes;
+std::vector<std::pair<Direction, uint8_t*>> Chunk::getAdjacentsCube(const glm::uvec3 &pos) {	
+	std::vector<std::pair<Direction, uint8_t*>> existingCubes;
 	existingCubes.reserve(6); // max 6 elements, reserve allow us to use emplace_back
 
-	glm::uvec3 coordo = indexToCoord(id);
-
 	// up 
-	if(int(coordo.y) + 1 < _size) {
-		existingCubes.emplace_back( std::make_pair(Up, _cubes[id + uint16_t(_size) * uint16_t(_size)]) );
+	if(int(pos.y) + 1 < _size) {
+		existingCubes.emplace_back(Up, _cubesType.getValue(pos + glm::uvec3(0, 1, 0)));
 	}
 	// down 
-	if(int(coordo.y) - 1 >= 0) {
-		existingCubes.emplace_back( std::make_pair(Down, _cubes[id - uint16_t(_size) * uint16_t(_size)]) );
+	if(int(pos.y) - 1 >= 0) {
+		existingCubes.emplace_back(Down, _cubesType.getValue(pos + glm::uvec3(0, -1, 0)));
 	}
 	// left 
-	if(int(coordo.x) - 1 >= 0) {
-		existingCubes.emplace_back( std::make_pair(Left, _cubes[id - uint16_t(1)]) );
+	if(int(pos.x) - 1 >= 0) {
+		existingCubes.emplace_back(Left,  _cubesType.getValue(pos + glm::uvec3(1, 0, 0)));
 	}
 	// right
-	if(int(coordo.x) + 1 < _size ) {
-		existingCubes.emplace_back( std::make_pair(Right, _cubes[id + uint16_t(1)]) );
+	if(int(pos.x) + 1 < _size ) {
+		existingCubes.emplace_back(Right,  _cubesType.getValue(pos + glm::uvec3(-1, 0, 0)));
 	}
 	// front
-	if(int(coordo.z) + 1 < _size ) {
-		existingCubes.emplace_back( std::make_pair(Front, _cubes[id + uint16_t(_size)]) );
+	if(int(pos.z) + 1 < _size ) {
+		existingCubes.emplace_back(Front,  _cubesType.getValue(pos + glm::uvec3(0, 0, 1)));
 	}
 	// back
-	if(int(coordo.z) - 1 >= 0) {
-		existingCubes.emplace_back( std::make_pair(Back, _cubes[id - uint16_t(_size)]) );
+	if(int(pos.z) - 1 >= 0) {
+		existingCubes.emplace_back(Back,  _cubesType.getValue(pos + glm::uvec3(0, 0, -1)));
 	}
 	return existingCubes;
 }
@@ -87,7 +136,7 @@ void Chunk::updateCubeMaskAndAdjacents(const uint16_t &id) {
         c->faceMask = 0x3F; // makes all sides visible (0b00111111)
     }
 	
-	std::vector<std::pair<Direction, CubeVertex*>> cubes = getAdjacentsCube(id);
+	
 
 	for(size_t i = 0; i != cubes.size(); i++) { // for each adjacents Cube
 		switch (cubes[i].first) {
@@ -181,7 +230,6 @@ void Chunk::updateCubeMask(const uint16_t &id) {
 	}
 }
 */
-
 //        (Z)
 //         ^
 //         |
@@ -209,7 +257,7 @@ void Chunk::draw(const world::Camera &c, const int& screenWidth, const int& scre
 		s.setInt("chunkSize", size());
 		const glm::mat4 MVMatrix = c.viewMatrix() * getModelMatrix();
 		s.setMat4("MVPMatrix", c.projectionMatrix(screenWidth, screenHeigh) * MVMatrix);
-        // TODO add supoprt of normal matrix for light
+        // TODO add support of normal matrix for light
 		// s.setMat3("NormalMatrix", glm::inverseTranspose(glm::mat3(MVMatrix)));
 
 		_VAO.bind();
@@ -225,14 +273,10 @@ uint8_t* Chunk::getCubeType(const glm::uvec3 &pos) const {
 }
 
 void Chunk::setCube(const glm::uvec3 &pos, const uint8_t &type) {
-	uint8_t* actualType = _cubesType.getValue(pos);
 	if ( _cubesType.setValue(pos, type)) { // if this modify our Octree
-		if (actualType != nullptr) {
-			updateMesh(pos, type); // just update our mesh
-		}else { // else if nullptr have been set we need to reconstruct mesh
-			needRemesh = true;
-		}
-		
+		// updateMesh(pos, type); // update our mesh
+		// without remesh all
+		needRemesh = true; // for debug
 	}
 }
 
