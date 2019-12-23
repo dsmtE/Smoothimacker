@@ -59,6 +59,8 @@ namespace world {
 		glm::mat4 projectionMatrix(const int& screenWidth, const int& screenHeigh) const;
 		glm::mat4 PVMatrix(const int& screenWidth, const int& screenHeigh) const;
 		inline float getZoom() const { return _zoom; }
+		inline glm::vec3 getFrontDir() const { return _front; }
+
 		
 		// input fonctions
         void handleEvents(const unsigned int &deltaTime);

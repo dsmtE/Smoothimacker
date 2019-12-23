@@ -18,30 +18,25 @@
 
 namespace world {
 
-    struct CursorVertex {
-        glm::vec3 position;
-
-        CursorVertex() = default;
-        CursorVertex(glm::vec3 const &p) : position(p) {}
-    };
-
     class Cursor {
 
     private:
 
-        std::vector<CursorVertex> _vertices;
+        std::vector<glm::vec3> _vertices;
         glm::ivec3 _position;
         glm::vec3 _color;
 
         openGL::VertexArray _VAO;
         openGL::VertexBuffer _VBO;
 
+        Camera* _camReferenceForMove;
+
     public:
 
         Cursor(const glm::vec3 &color = glm::vec3(0, 0, 1));
         ~Cursor() = default;
         
-        void draw(const world::Camera &cam, const int& screenWidth, const int& screenHeigh, openGL::Shader &shader);
+        void draw(const Camera &cam, const int& screenWidth, const int& screenHeigh, openGL::Shader &shader);
 
         glm::mat4 modelMatrix() const;
 
@@ -49,5 +44,6 @@ namespace world {
 
         inline glm::ivec3* getPointerPos() { return &_position; };
         inline void setPos(const glm::ivec3 p) { _position = p; };
+        inline void setCameraReference(Camera &c) { _camReferenceForMove = &c; };
     };
 }

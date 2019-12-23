@@ -17,7 +17,7 @@ App::App(int width, int height, const char* title) :
 	_menu(_cursor.getPointerPos()), 
 	_chunk(16) {
 	SDL_SetRelativeMouseMode(SDL_FALSE);
-
+	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
 	//fill chunk 
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {

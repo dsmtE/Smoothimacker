@@ -4,7 +4,10 @@
 
 using namespace world;
 
-
+//        (Y) ^(Z)
+//         ^ /
+//         |/
+//         .---->(X)
 Camera::Camera(const glm::vec3 &position, const glm::vec3 &worldUp, const float &yaw, const float &pitch) : 
     _position(position), _worldUp(worldUp), _yaw(yaw), _pitch(pitch), _movementSpeed(SPEED), _mouseSensitivity(SENSITIVITY), _zoom(ZOOM), _hasChanged(false) {
 	updateVectors();
@@ -16,7 +19,6 @@ void Camera::updateVectors() {
     front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
     front.y = sin(glm::radians(_pitch));
     front.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-
 
     _front = glm::normalize(front);
     // Also re-calculate the Right and Up vector
@@ -49,10 +51,10 @@ void Camera::handleEvents(const unsigned int &deltaTime) {
 	}
 
 	if (state[SDL_GetScancodeFromKey(SDLK_SPACE)]) {
-		_position += _up * velocity;
+		_position += _worldUp * velocity;
 	}
 	if (state[SDL_GetScancodeFromKey(SDLK_LSHIFT)]) {
-		_position -= _up * velocity;
+		_position -= _worldUp * velocity;
 	}
 
 	// update cam's vectors if needed
