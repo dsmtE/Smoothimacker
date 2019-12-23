@@ -46,14 +46,19 @@ namespace world {
         // VAO build called in constructor
         void buildVAO();
 
-		//privates methods used in mesh Reconstruction // TODO
+		//privates methods used in mesh Reconstruction
 		glm::uvec3 mortonIdToPos(const uint8_t &id) const;
 		glm::uvec3 getPositionFromOctreeSubIndex(const std::vector<uint8_t> &OSubId) const;
+		// a verifier
 		std::vector<std::pair<Direction, uint8_t*>> getAdjacentsCube(const glm::uvec3 &pos);
-		void updateCubeMask(const uint16_t &id);
-		void updateCubeMaskAndAdjacents(const uint16_t& id);
-
+		// a verifier
+		CubeVertex* getVertexInMesh(const glm::uvec3 &pos);
+		// a verifier
+		void updateCubeMask(const glm::uvec3 &pos);
+		void updateAllCubeMask();
+		// TODO
 		void updateMesh(const glm::uvec3 &pos, const uint8_t &type);
+
 		void buildMesh();
 		void setVBOdata();
 

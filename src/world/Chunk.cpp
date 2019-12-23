@@ -19,7 +19,7 @@ bool Chunk::validCoordinate(const glm::uvec3 &pos) const {
 	return glm::all(glm::lessThan(pos, glm::uvec3( _size )));
 }
 
-void Chunk::buildVAO() {
+void Chunk::buildVAO() {  
 		const GLuint pos = 0;
 		const GLuint type = 1;
 		const GLuint faceMask = 2;
@@ -51,7 +51,7 @@ glm::uvec3 Chunk::getPositionFromOctreeSubIndex(const std::vector<uint8_t> &OSub
 }
 
 void Chunk::buildMesh() {
-	_mesh.clear();
+	_mesh.clear();  
 	_mesh.reserve(1 << _cubesType.size());
 
 	//  iterate through Octree and add value
@@ -62,24 +62,72 @@ void Chunk::buildMesh() {
 	OctreeSubIndex.push_back(0);
 
 	while (OctreeSubIndex[0] < 8) { // until we visit all subOctree
-		if( workOctree->isLeaf() ) {
-			uint8_t* val = workOctree->getValue();
-			if (val != nullptr) {
-				_mesh.push_back(CubeVertex( getPositionFromOctreeSubIndex(OctreeSubIndex), *val, 255 ) );
+		// eighth son reached, we go back to the octree parent.
+		if (OctreeSubIndex.back() >= 8) {
+			OctreeSubIndex.pop_back();
+			workOctree = workOctree->getParent();
+			OctreeSubIndex.back()++;
+		}else {
+			// if next children exist
+			if(workOctree->getChild(OctreeSubIndex.back()) != nullptr) {
+				// assign next existing Octree
+				workOctree = workOctree->getChild(OctreeSubIndex.back());
+				// next use workOctree as nullptr DEBUG
+				assert(workOctree != nullptr);
+				if( workOctree->isLeaf() ) {
+					uint8_t* val = workOctree->getValue();
+					if (val != nullptr) { // add to mesh if value exist
+						_mesh.push_back(CubeVertex( getPositionFromOctreeSubIndex(OctreeSubIndex), *val, 255 ) );
+					}
+					// backUp in parent (because is leaf())
+					//OctreeSubIndex.pop_back();
+					workOctree = workOctree->getParent();
+					OctreeSubIndex.back()++;
+				}else { 
+					// go deeper in childen
+					OctreeSubIndex.push_back(0);
+				}
+			}else {
+				OctreeSubIndex.back()++;
 			}
 		}
-		// next subIndex
-		OctreeSubIndex.back()++;
-		while (OctreeSubIndex.back() >= 8 && OctreeSubIndex[0] < 8) {
-			OctreeSubIndex.pop_back();
-			OctreeSubIndex.back()++;
-		}
+	}// mesh done with all non null value of subOctree
+	updateAllCubeMask();
+}
+
+
+std::vector<std::pair<Direction, uint8_t*>> Chunk::getAdjacentsCube(const glm::uvec3 &pos) {	
+	std::vector<std::pair<Direction, uint8_t*>> existingCubes;
+	existingCubes.reserve(6); // max 6 elements, reserve allow us to use emplace_back
+
+	// up 
+	if(int(pos.y) + 1 < _size) {
+		existingCubes.emplace_back(Up, _cubesType.getValue(glm::uvec3(pos.x, pos.y+1, pos.z)));
 	}
-	// mesh done with all non null value of subOctree
+	// down 
+	if(int(pos.y) - 1 >= 0) {
+		existingCubes.emplace_back(Down, _cubesType.getValue(glm::uvec3(pos.x, pos.y-1, pos.z)));
+	}
+	// left 
+	if(int(pos.x) - 1 >= 0) {
+		existingCubes.emplace_back(Left,  _cubesType.getValue(glm::uvec3(pos.x-1, pos.y, pos.z)));
+	}
+	// right
+	if(int(pos.x) + 1 < _size ) {
+		existingCubes.emplace_back(Right,  _cubesType.getValue(glm::uvec3(pos.x+1, pos.y, pos.z)));
+	}
+	// front
+	if(int(pos.z) + 1 < _size ) {
+		existingCubes.emplace_back(Front,  _cubesType.getValue(glm::uvec3(pos.x, pos.y, pos.z+1)));
+	}
+	// back
+	if(int(pos.z) - 1 >= 0) {
+		existingCubes.emplace_back(Back,  _cubesType.getValue(glm::uvec3(pos.x, pos.y, pos.z-1)));
+	}
+	return existingCubes;
 }
 
 /*
-
 void Chunk::updateMesh(const glm::uvec3 &pos, const uint8_t &type) {
 	// TODO
 	//  update our mesh
@@ -98,83 +146,75 @@ void Chunk::updateMesh(const glm::uvec3 &pos, const uint8_t &type) {
         c->faceMask = 0x3F; // makes all sides visible (0b00111111)
     }
 }
-
-std::vector<std::pair<Direction, uint8_t*>> Chunk::getAdjacentsCube(const glm::uvec3 &pos) {	
-	std::vector<std::pair<Direction, uint8_t*>> existingCubes;
-	existingCubes.reserve(6); // max 6 elements, reserve allow us to use emplace_back
-
-	// up 
-	if(int(pos.y) + 1 < _size) {
-		existingCubes.emplace_back(Up, _cubesType.getValue(pos + glm::uvec3(0, 1, 0)));
+*/
+CubeVertex* Chunk::getVertexInMesh(const glm::uvec3 &pos) {
+	CubeVertex* cVertex = nullptr;
+	for( CubeVertex cv: _mesh) {
+		// find the right CubeVertex for this position
+		// TODO use an index system for the cubes existing in the octree
+		//  to avoid iteration over all existing elements in the mesh
+		if (cv.pos == pos) {
+			cVertex = &cv;
+			break;
+		}
 	}
-	// down 
-	if(int(pos.y) - 1 >= 0) {
-		existingCubes.emplace_back(Down, _cubesType.getValue(pos + glm::uvec3(0, -1, 0)));
-	}
-	// left 
-	if(int(pos.x) - 1 >= 0) {
-		existingCubes.emplace_back(Left,  _cubesType.getValue(pos + glm::uvec3(1, 0, 0)));
-	}
-	// right
-	if(int(pos.x) + 1 < _size ) {
-		existingCubes.emplace_back(Right,  _cubesType.getValue(pos + glm::uvec3(-1, 0, 0)));
-	}
-	// front
-	if(int(pos.z) + 1 < _size ) {
-		existingCubes.emplace_back(Front,  _cubesType.getValue(pos + glm::uvec3(0, 0, 1)));
-	}
-	// back
-	if(int(pos.z) - 1 >= 0) {
-		existingCubes.emplace_back(Back,  _cubesType.getValue(pos + glm::uvec3(0, 0, -1)));
-	}
-	return existingCubes;
+	return cVertex;
 }
 
-void Chunk::updateCubeMaskAndAdjacents(const uint16_t &id) {
-	CubeVertex* c = _cubes[id];
-    if (c != nullptr) {
-        c->faceMask = 0x3F; // makes all sides visible (0b00111111)
-    }
-	
-	
+void Chunk::updateCubeMask(const glm::uvec3 &pos) {
+	assert( _cubesType.getValue(pos) != nullptr);
 
-	for(size_t i = 0; i != cubes.size(); i++) { // for each adjacents Cube
-		switch (cubes[i].first) {
+	CubeVertex* cVertex = getVertexInMesh(pos);
+	assert( cVertex != nullptr); // this position must exist in _mesh to be updated
+
+	cVertex->faceMask = 0x3F; // makes all sides visible by default (0b00111111)
+
+	std::vector<std::pair<Direction, uint8_t*>> aCubes = getAdjacentsCube(pos);
+
+	for(size_t i = 0; i != aCubes.size(); i++) { // for each adjacents Cubes
+		switch (aCubes[i].first) {
 			case Up:
-				if (cubes[i].second != nullptr) {
-					if (c != nullptr) { c->faceMask -= 0x01; }
+				if (aCubes[i].second != nullptr) {
+					cVertex->faceMask -= 0x01;
                     // TODO use mask directly insted of recurs
-					updateCubeMask( (cubes[i].second)->indexInChunk );
+					CubeVertex* adjCubeVtx = getVertexInMesh(glm::uvec3(pos.x, pos.y+1, pos.z));
+					if(adjCubeVtx != nullptr) { adjCubeVtx->faceMask -= 0x02; }
 				}
 				break;
 			case Down:
-				if (cubes[i].second != nullptr) {
-					if (c != nullptr) { c->faceMask -= 0x02; }
-					updateCubeMask((cubes[i].second)->indexInChunk);
+				if (aCubes[i].second != nullptr) {
+					cVertex->faceMask -= 0x02;
+					// change other cubeVertex
+					CubeVertex* adjCubeVtx = getVertexInMesh(glm::uvec3(pos.x, pos.y-1, pos.z));
+					if(adjCubeVtx != nullptr) { adjCubeVtx->faceMask -= 0x01; }
 				}
 				break;
 			case Left:
-				if (cubes[i].second != nullptr) {
-					if (c != nullptr) { c->faceMask -= 0x04; }
-					updateCubeMask((cubes[i].second)->indexInChunk);
+				if (aCubes[i].second != nullptr) {
+					cVertex->faceMask -= 0x04;
+					CubeVertex* adjCubeVtx = getVertexInMesh(glm::uvec3(pos.x-1, pos.y, pos.z));
+					if(adjCubeVtx != nullptr) { adjCubeVtx->faceMask -= 0x08; }
 				}
 				break;
 			case Right:
-				if (cubes[i].second != nullptr) {
-					if (c != nullptr) { c->faceMask -= 0x08; }
-					updateCubeMask((cubes[i].second)->indexInChunk);
+				if (aCubes[i].second != nullptr) {
+					cVertex->faceMask -= 0x08;
+					CubeVertex* adjCubeVtx = getVertexInMesh(glm::uvec3(pos.x+1, pos.y, pos.z));
+					if(adjCubeVtx != nullptr) { adjCubeVtx->faceMask -= 0x04; }
 				}
 				break;
 			case Front:
-				if (cubes[i].second != nullptr) {
-					if (c != nullptr) { c->faceMask -= 0x10; }
-					updateCubeMask((cubes[i].second)->indexInChunk);
+				if (aCubes[i].second != nullptr) {
+					cVertex->faceMask -= 0x10;
+					CubeVertex* adjCubeVtx = getVertexInMesh(glm::uvec3(pos.x, pos.y, pos.z+1));
+					if(adjCubeVtx != nullptr) { adjCubeVtx->faceMask -= 0x20; }
 				}
 				break;
 			case Back:
-				if (cubes[i].second != nullptr) {
-					if (c != nullptr) { c->faceMask -= 0x20; }
-					updateCubeMask((cubes[i].second)->indexInChunk);
+				if (aCubes[i].second != nullptr) {
+					cVertex->faceMask -= 0x20;
+					CubeVertex* adjCubeVtx = getVertexInMesh(glm::uvec3(pos.x, pos.y, pos.z-1));
+					if(adjCubeVtx != nullptr) { adjCubeVtx->faceMask -= 0x10; }
 				}
 				break;
 			
@@ -185,57 +225,62 @@ void Chunk::updateCubeMaskAndAdjacents(const uint16_t &id) {
 	}
 }
 
-void Chunk::updateCubeMask(const uint16_t &id) {
-	CubeVertex* c = _cubes[id];
-    assert(c != nullptr); // trying to update the mask of a non-existent cube.
-	c->faceMask = 0b00111111;
-	std::vector<std::pair<Direction, CubeVertex*>> cubes = getAdjacentsCube(id);
+void Chunk::updateAllCubeMask() {
 
-	for(size_t i = 0; i != cubes.size(); i++) {
-		switch (cubes[i].first) {
-			case Up:
-				if (cubes[i].second != nullptr) {
-					c->faceMask -= 0b00000001;
-				}
-				break;
-			case Down:
-				if (cubes[i].second != nullptr) {
-					c->faceMask -= 0b00000010;
-				}
-				break;
-			case Left:
-				if (cubes[i].second != nullptr) {
-					c->faceMask -= 0b00000100;
-				}
-				break;
-			case Right:
-				if (cubes[i].second != nullptr) {
-					c->faceMask -= 0b00001000;
-				}
-				break;
-			case Front:
-				if (cubes[i].second != nullptr) {
-					c->faceMask -= 0b00010000;
-				}
-				break;
-			case Back:
-				if (cubes[i].second != nullptr) {
-					c->faceMask -= 0b00100000;
-				}
-				break;			
-			default:
-			    std::cerr << "error: unknown direction" << std::endl;
-				break;
+
+
+	for (CubeVertex &cv: _mesh) {// for each cubeVertex (existing cube)
+		cv.faceMask = 0x3F; // makes all sides visible by default (0b00111111)
+
+		std::vector<std::pair<Direction, uint8_t*>> aCubes = getAdjacentsCube(cv.pos);
+
+		for(size_t i = 0; i != aCubes.size(); i++) { // for each adjacents Cubes
+			switch (aCubes[i].first) {
+				case Up:
+					if (aCubes[i].second != nullptr) {
+						cv.faceMask -= 0x01;
+					}
+					break;
+				case Down:
+					if (aCubes[i].second != nullptr) {
+						cv.faceMask -= 0x02;
+					}
+					break;
+				case Left:
+					if (aCubes[i].second != nullptr) {
+						cv.faceMask -= 0x04;
+					}
+					break;
+				case Right:
+					if (aCubes[i].second != nullptr) {
+						cv.faceMask -= 0x08;
+					}
+					break;
+				case Front:
+					if (aCubes[i].second != nullptr) {
+						cv.faceMask -= 0x10;
+					}
+					break;
+				case Back:
+					if (aCubes[i].second != nullptr) {
+						cv.faceMask -= 0x20;
+					}
+					break;
+				
+				default:
+					std::cerr << "error: unknown direction" << std::endl;
+					break;
+			}
 		}
 	}
 }
-*/
+
 //        (Z)
 //         ^
 //         |
 //         .---->(X)
 //        /
-//   (Y) v 
+//   (Y) v
 glm::uvec3 Chunk::indexToCoord(const uint16_t &id) const {
 	return glm::uvec3(id % _size, id / (_size * _size), (id / _size) % _size);
 }
@@ -254,7 +299,7 @@ void Chunk::draw(const world::Camera &c, const int& screenWidth, const int& scre
 	if (hasMesh()) {
 		s.bind();
 
-		s.setInt("chunkSize", size());
+		// s.setInt("chunkSize", size());
 		const glm::mat4 MVMatrix = c.viewMatrix() * getModelMatrix();
 		s.setMat4("MVPMatrix", c.projectionMatrix(screenWidth, screenHeigh) * MVMatrix);
         // TODO add support of normal matrix for light

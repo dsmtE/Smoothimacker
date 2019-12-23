@@ -25,8 +25,12 @@ namespace world {
 		Octree(Octree<T>* parent, const unsigned int &currentSubId);
 		~Octree();
 
+		// Octree<T>* operator[](const uint8_t &id);
+		Octree<T>* getChild(const uint8_t &id);
+		
 		bool hasChildren() const;
-		inline bool isLeaf() const { return _depth == 0 ;};
+		inline bool isLeaf() const { return _depth == 0; };
+		inline Octree<T>* getParent() const { return _parent; };
 		inline unsigned int size() const { return (1 << _depth); };
 		inline unsigned int depth() const { return _depth; };
 		inline unsigned int capacity() const { unsigned int size = size(); return s*s*s; }
@@ -37,6 +41,7 @@ namespace world {
 		bool delValue(const glm::uvec3 &pos);
 		bool setValue(const glm::uvec3 &pos, const T &val);
 };
+
 
 template <typename T> 
 bool Octree<T>::hasChildren() const {
@@ -64,6 +69,11 @@ Octree<T>::Octree(Octree<T>* parent, const unsigned int &currentSubId) :
 		_val(nullptr), 
 		_currentSubId(currentSubId), 
 		_depth(parent->_depth-1) {
+}
+
+template <typename T> 
+Octree<T>* Octree<T>::getChild(const uint8_t &id) {
+	return _children[id];
 }
 
 template <typename T> 
