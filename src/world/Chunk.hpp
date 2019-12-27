@@ -10,64 +10,33 @@
 #include "../openGL/Shader.hpp"
 
 #include "Camera.hpp"
-#include "Octree.hpp"
+#include "VoxelOctree.hpp"
 // #include "../imath/util.hpp"
 
 namespace world {
-
-	struct CubeVertex {
-		glm::uvec3 pos;
-		uint8_t type;
-		uint8_t faceMask;
-
-		CubeVertex() = default;
-		CubeVertex(const glm::uvec3& p, const uint8_t& t, const uint8_t& m) : pos(p), type(t), faceMask(m) {}
-	};
-
-	enum Direction { Up, Down, Left, Right, Front, Back };
 
 	class Chunk {
 
 	private:
         //---------- Attributes ----------//
 
-		Octree<uint8_t> _cubesType; // octree of type
-		std::vector<CubeVertex> _mesh; // send it to GPU with only used CubeVertex in cubes (copy of original Cubes in _cubes)
+		VoxelOctree _cubes; // octree of cubes
 
-        bool needRemesh;
 		glm::uvec3 _position; // position of chunk in world
-		uint8_t _size;
 
 		openGL::VertexArray _VAO;
 		openGL::VertexBuffer _VBO;
+
+		bool needUpdateVBO;
 
         //---------- Private Methods ----------//
 
         // VAO build called in constructor
         void buildVAO();
-
-		//privates methods used in mesh Reconstruction
-		glm::uvec3 mortonIdToPos(const uint8_t &id) const;
-		glm::uvec3 getPositionFromOctreeSubIndex(const std::vector<uint8_t> &OSubId) const;
-		// a verifier
-		std::vector<std::pair<Direction, uint8_t*>> getAdjacentsCube(const glm::uvec3 &pos);
-		// a verifier
-		CubeVertex* getVertexInMesh(const glm::uvec3 &pos);
-		// a verifier
-		void updateCubeMask(const glm::uvec3 &pos);
-		void updateAllCubeMask();
-		// TODO
-		void updateMesh(const glm::uvec3 &pos, const uint8_t &type);
-
-		void buildMesh();
 		void setVBOdata();
 
         // check if the coordinates are within the limits
         bool validCoordinate(const glm::uvec3 &pos) const;
-
-		// index <=> coordinate convertion functions  (deprecated)
-		glm::uvec3 indexToCoord(const uint16_t &id) const;
-        uint16_t coordToIndex(const glm::uvec3 &pos) const;
 
 	public:
 
@@ -79,17 +48,20 @@ namespace world {
 		void draw(const Camera &c, const int& screenWidth, const int& screenHeigh, openGL::Shader &s);
 
         // cubes setters and getters
-        uint8_t* getCubeType(const glm::uvec3 &pos) const;
-		void setCube(const glm::uvec3 &pos, const uint8_t &type);
-        void delCube(const glm::uvec3 &pos);
+
+		/// return type at given position if exist else throw string error 
+		/// catch(string const& str) {cerr << str << endl; }
+		const uint8_t getType(const glm::uvec3 &pos);
+		/// del value in our data array and octree coresponding id
+		bool delAt(const glm::uvec3 &pos);
+		bool setType(const glm::uvec3 &pos, const uint8_t &type);
 
         //---------- Getters & Setters ----------//
 
 		glm::mat4 getModelMatrix() const;
 
-        inline uint16_t capacity() const { return _size * _size * _size; };
-		inline uint8_t size() const { return _size; };
-		inline bool hasMesh() const { return _mesh.size() != 0; };
+        inline uint16_t capacity() const { return _cubes.capacity(); };
+		inline uint8_t size() const { return _cubes.size(); };
         inline void setPosition(const glm::uvec3& pos) { _position = pos; }
 
         void updateAllCubesMask();

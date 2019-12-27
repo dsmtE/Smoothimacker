@@ -15,14 +15,14 @@ App::App(int width, int height, const char* title) :
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
 	_relativeMouse(SDL_FALSE) ,
 	_menu(_cursor.getPointerPos()), 
-	_chunk(3) {
+	_chunk(5) {
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 
 	//fill chunk 
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
 			for (unsigned int k = 0; k < _chunk.size(); k++) {
-				_chunk.setCube(glm::uvec3(i, j, k), j); 
+				_chunk.setType(glm::uvec3(i, j, k), j); 
 			}
 		}
 	}

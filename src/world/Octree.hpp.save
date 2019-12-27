@@ -6,7 +6,7 @@ namespace world {
     template <typename T> 
 	class  Octree {
 
-	private:
+	protected:
 		//---------- Variables ----------//
         Octree* _parent;
 		std::array<Octree*, 8> _children; // using array because constant size ( 8 children )

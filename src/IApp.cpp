@@ -15,7 +15,7 @@ IApp::IApp(int width, int height, const char* title) :
 }
 
 void IApp::beginFrame() {
-	GLCall(glClearColor(0.102, 0.117f, 0.141f, 1.0f)); // set background color
+	GLCall(glClearColor(0.102f, 0.117f, 0.141f, 1.0f)); // set background color
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // clear
 	_window.updateImgui(); 
 }
