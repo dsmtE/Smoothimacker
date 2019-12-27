@@ -11,7 +11,7 @@ using namespace world;
 
 Chunk::Chunk(const unsigned int &depth, const glm::uvec3 &pos) :  _position(pos), _cubes(depth), needUpdateVBO(false) {
 	// limit chunk size
-    assert(depth <= 8); // limit chunk by (2^8)^3 = 1 6777 216 elements 
+    assert(depth <= 7); // limit chunk by (2^7)^3 = 2 097 152 elements 
 	buildVAO();
 }
 
@@ -83,7 +83,7 @@ bool Chunk::delAt(const glm::uvec3 &pos) {
 
 bool Chunk::setType(const glm::uvec3 &pos, const uint8_t &type) {
 	if ( _cubes.setType(pos, type) ) {
-		// need update local our VBO data insted of update all with  setVBOdata()
+		// need update local our VBO data insted of update all with setVBOdata()
 		needUpdateVBO = true;
 		return true;
 	}
@@ -95,3 +95,7 @@ glm::mat4 Chunk::getModelMatrix() const {
 	m = glm::translate(m, glm::vec3(_position * unsigned int( _cubes.size() )));
 	return m;
 }
+
+unsigned int  Chunk::size() const {
+	return _cubes.size();
+};

@@ -38,7 +38,7 @@ public:
 	bool hasChildren() const;
 	inline bool isLeaf() const { return _depth == 0; };
 	inline Octree<T> *getParent() const { return _parent; };
-	inline unsigned int size() const { return (1 << _depth); };
+	inline unsigned int size() const { return unsigned int(1 << _depth); };
 	inline uint8_t depth() const { return _depth; };
 	inline unsigned int capacity() const { unsigned int s = size(); return s*s*s; }
 
@@ -49,6 +49,7 @@ public:
 
 	/// return copy to ptr to value with it's position (nullptr if not exist)
 	T*& getValue(const glm::uvec3 &pos);
+	T* getPtrValue(const glm::uvec3 &pos);
 	/// same as previous but create new ptr is not exist and return pointer 
 	/// use ptr of ptr to be able to modify the value outside and because
 	/// the value necessarily exists or has just been created 
@@ -90,6 +91,7 @@ class  ListLinkedOctree {
 	/// return value at given position if exist else throw string error 
 	/// catch(string const& str) {cerr << str << endl; }
 	T& getValue(const glm::uvec3 &pos);
+	T* getPtrValue(const glm::uvec3 &pos);
 	/// del value in our data array and octree coresponding id
 	bool delValue(const glm::uvec3 &pos);
 	/// set value at given position
@@ -118,10 +120,20 @@ T& ListLinkedOctree<T>::getValue(const glm::uvec3 &pos) {
 }
 
 template <typename T>
+T* ListLinkedOctree<T>::getPtrValue(const glm::uvec3 &pos) {
+	unsigned int* idPtr = _octree.getPtrValue(pos);
+	if (idPtr != nullptr) {
+		 return &(_data[*idPtr]);
+	} else {
+		return nullptr;
+	}
+}
+
+template <typename T>
 bool ListLinkedOctree<T>::delValue(const glm::uvec3 &pos) {
-	unsigned int* idPtr = _octree.getValue(pos); // reference
-	if(idPtr == nullptr) {
-		if (*idPtr != _data.size()) {
+	unsigned int* idPtr = _octree.getPtrValue(pos); // reference
+	if(idPtr != nullptr) {
+		if (*idPtr != _data.size()-1) {
 			swapWithEnd(idPtr);
 		}
 		_data.pop_back(); // delete last element in vector
@@ -273,6 +285,31 @@ T*& Octree<T>::getValue(const glm::uvec3 &pos) {
 	// this declaration cannot normally be reached due to recursion
 	assert(false);
 }
+
+template <typename T>
+T* Octree<T>::getPtrValue(const glm::uvec3 &pos) {
+	if( isLeaf() || !hasChildren()) {
+		return _val; // can be nullptr
+	}
+
+  	assert(validCoordinate(pos)); // check bound
+
+	//Get the Position we want to set using morton code
+	unsigned mortonMask = 1 << (_depth-1);
+	glm::uvec3 mortonPos =  pos / glm::uvec3(mortonMask);
+	unsigned int mortonId = mortonPos.x + (mortonPos.z << 1) + (mortonPos.y << 2);
+	
+	// if the node with the right index alredy exist,
+	if (_children[mortonId] != nullptr) {
+		return _children[mortonId]->getPtrValue(pos - mortonPos*glm::uvec3(mortonMask));
+	}else {
+		//If the right subOctree element doesn't exist return nullptr as default value
+		return nullptr;
+	}
+	// this declaration cannot normally be reached due to recursion
+	assert(false);
+}
+
 
 template <typename T>
 T** Octree<T>::getOrCreateValue(const glm::uvec3 &pos) {

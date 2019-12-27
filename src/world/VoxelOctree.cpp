@@ -26,39 +26,45 @@ std::vector<std::pair<Direction, CubeVertex*>> VoxelOctree::getAdjacentsCubes(co
 
 	// up 
 	if(int(pos.y) + 1 < int(size())) {
-        try {
-            existingCubes.push_back( std::make_pair(Up, &getValue(glm::uvec3(pos.x, pos.y+1, pos.z)) ) );
-        }catch(std::string const str) {} // catch nothing
+        CubeVertex* c = getPtrValue(glm::uvec3(pos.x, pos.y+1, pos.z)); 
+        if( c != nullptr ) {
+            existingCubes.push_back( std::make_pair(Up, c ) );
+        }
 	}
 	// down 
 	if(int(pos.y) - 1 >= 0) {
-		try { 
-            existingCubes.push_back( std::make_pair(Down, &getValue(glm::uvec3(pos.x, pos.y-1, pos.z)) ) );
-        }catch(std::string const str) {}
+		CubeVertex* c = getPtrValue(glm::uvec3(pos.x, pos.y-1, pos.z)); 
+        if( c != nullptr ) { 
+            existingCubes.push_back( std::make_pair(Down, c ) );
+        }
 	}
 	// left 
 	if(int(pos.x) - 1 >= 0) {
-		try { 
-            existingCubes.push_back( std::make_pair(Left,  &getValue(glm::uvec3(pos.x-1, pos.y, pos.z)) ) );
-        }catch(std::string const str) {}
+		CubeVertex* c = getPtrValue(glm::uvec3(pos.x-1, pos.y, pos.z)); 
+        if( c != nullptr ) { 
+            existingCubes.push_back( std::make_pair(Left, c ) );
+        }
 	}
 	// right
 	if(int(pos.x) + 1 < int(size()) ) {
-		try { 
-            existingCubes.push_back( std::make_pair(Right,  &getValue(glm::uvec3(pos.x+1, pos.y, pos.z)) ) );
-        }catch(std::string const str) {}
+		CubeVertex* c = getPtrValue(glm::uvec3(pos.x+1, pos.y, pos.z)); 
+        if( c != nullptr ) { 
+            existingCubes.push_back( std::make_pair(Right, c ) );
+        }
 	}
 	// front
 	if(int(pos.z) + 1 < int(size()) ) {
-		try { 
-            existingCubes.push_back( std::make_pair(Front,  &getValue(glm::uvec3(pos.x, pos.y, pos.z+1)) ) );
-        }catch(std::string const str) {}
+		CubeVertex* c = getPtrValue(glm::uvec3(pos.x, pos.y, pos.z+1)); 
+        if( c != nullptr ) { 
+            existingCubes.push_back( std::make_pair(Front, c ) );
+        }
 	}
 	// back
 	if(int(pos.z) - 1 >= 0) {
-		try { 
-            existingCubes.push_back( std::make_pair(Back,  &getValue(glm::uvec3(pos.x, pos.y, pos.z-1)) ) );
-        }catch(std::string const str) {}
+		CubeVertex* c = getPtrValue(glm::uvec3(pos.x, pos.y, pos.z-1)); 
+        if( c != nullptr ) { 
+            existingCubes.push_back( std::make_pair(Back, c ) );
+        }
 	}
 	return existingCubes;
 }
@@ -67,12 +73,8 @@ uint8_t VoxelOctree::getType(const glm::uvec3 &pos) {
     return getValue(pos).type;
 }
 
-bool VoxelOctree::delAt(const glm::uvec3 &pos) {
-    
+bool VoxelOctree::delAt(const glm::uvec3 &pos) {   
     if( delValue(pos) ) {
-
-        // cVertex->faceMask = 0x3F; // makes all sides visible by default (0b00111111)
-
         std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(pos);
 
         for(auto adjC : adjCubes) { // for each adjacents Cubes
@@ -111,7 +113,7 @@ bool VoxelOctree::delAt(const glm::uvec3 &pos) {
     }
 }
 
-bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type) {
+bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type, const bool &updateFaceMask) {
     unsigned int** idPtr = _octree.getOrCreateValue(pos);
 	if(*idPtr == nullptr) {
 		_data.emplace_back(pos, type, 0x3F); // alocate new value (0x3F (0b00111111) makes all sides visible by default)
@@ -124,43 +126,83 @@ bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type) {
             return false;
         }
 	}
-    std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(pos);
 
-    for(auto adjC : adjCubes) { // for each adjacents Cubes
-        switch (adjC.first) {
-            case Up:
-                _data[**idPtr].faceMask -= 0x01; // update mask at this position
-                (adjC.second)->faceMask -= 0x02; // update mask on ajdacent position
-                break;
-            case Down:
-                _data[**idPtr].faceMask -= 0x02;
-                (adjC.second)->faceMask -= 0x01;
-                break;
+    if(updateFaceMask) {
+        std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(pos);
+        CubeVertex cv = _data[**idPtr];
+        for(auto adjC : adjCubes) { // for each adjacents Cubes
+            switch (adjC.first) {
+                case Up:
+                    cv.faceMask -= 0x01; // update mask at this position
+                    (adjC.second)->faceMask -= 0x02; // update mask on ajdacent position
+                    break;
+                case Down:
+                    cv.faceMask -= 0x02;
+                    (adjC.second)->faceMask -= 0x01;
+                    break;
 
-            case Left:
-                _data[**idPtr].faceMask -= 0x04;
-                (adjC.second)->faceMask -= 0x08;
-                break;
+                case Left:
+                    cv.faceMask -= 0x04;
+                    (adjC.second)->faceMask -= 0x08;
+                    break;
 
-            case Right:
-                _data[**idPtr].faceMask -= 0x08;
-                (adjC.second)->faceMask -= 0x04;
-                break;
+                case Right:
+                    cv.faceMask -= 0x08;
+                    (adjC.second)->faceMask -= 0x04;
+                    break;
 
-            case Front:
-                _data[**idPtr].faceMask -= 0x10;
-                (adjC.second)->faceMask -= 0x20;
-                break;
+                case Front:
+                    cv.faceMask -= 0x10;
+                    (adjC.second)->faceMask -= 0x20;
+                    break;
 
-            case Back:
-                _data[**idPtr].faceMask -= 0x20;
-                (adjC.second)->faceMask -= 0x10;
-                break;
+                case Back:
+                    cv.faceMask -= 0x20;
+                    (adjC.second)->faceMask -= 0x10;
+                    break;
 
-            default:
-                std::cerr << "error: unknown direction" << std::endl;
-                break;
+                default:
+                    std::cerr << "error: unknown direction" << std::endl;
+                    break;
+            }
         }
     }
     return true;
+}
+
+void VoxelOctree::updateAllFaceMask() {
+    for(CubeVertex &cv : _data) {
+        std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(cv.pos);
+        cv.faceMask = 0x3F;
+        for(auto adjC : adjCubes) { // for each adjacents Cubes
+            switch (adjC.first) {
+                case Up:
+                    cv.faceMask -= 0x01;
+                    break;
+                case Down:
+                    cv.faceMask -= 0x02;
+                    break;
+
+                case Left:
+                    cv.faceMask -= 0x04;
+                    break;
+
+                case Right:
+                    cv.faceMask -= 0x08;
+                    break;
+
+                case Front:
+                    cv.faceMask -= 0x10;
+                    break;
+
+                case Back:
+                    cv.faceMask -= 0x20;
+                    break;
+
+                default:
+                    std::cerr << "error: unknown direction" << std::endl;
+                    break;
+            }
+        }
+    }
 }

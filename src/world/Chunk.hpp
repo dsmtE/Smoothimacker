@@ -61,10 +61,10 @@ namespace world {
 		glm::mat4 getModelMatrix() const;
 
         inline uint16_t capacity() const { return _cubes.capacity(); };
-		inline uint8_t size() const { return _cubes.size(); };
+		unsigned int size() const;
         inline void setPosition(const glm::uvec3& pos) { _position = pos; }
 
-        void updateAllCubesMask();
+		inline void updateAllFaceMask() { _cubes.updateAllFaceMask(); };
 
         //---------- Compatibility fonctions ----------//
 		/*
