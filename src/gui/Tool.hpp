@@ -1,20 +1,20 @@
 #pragma once
 
-#include "toolStrategies/IToolStrategy.hpp"
 #include <SDL.h>
+#include <functional>
 
 namespace gui {
 	
 	class Tool {
 	
 	private:
-		IToolStrategy* _strategy;
-	
+		std::function<void()> _action;
+
 	public:
 		Tool();
-		~Tool();
+		~Tool() = default;
 
 		void handleSDLEvents(SDL_Event sdlEvent);
-		void setStrategy(StrategyType type);
+		void setAction(std::function<void()> action);
 	};
 }

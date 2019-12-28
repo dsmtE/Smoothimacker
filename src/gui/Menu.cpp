@@ -11,7 +11,7 @@
 
 using namespace gui;
 
-Menu::Menu(glm::ivec3* cursorPointer): _cursorPos(cursorPointer) {};
+Menu::Menu(glm::ivec3* cursorPointer, world::Chunk* chunkPtr): _cursorPos(cursorPointer), _chunkPtr(chunkPtr) {};
 
 void Menu::handleEvent(SDL_Event sdlEvent) {
 	_tool.handleSDLEvents(sdlEvent);
@@ -21,31 +21,32 @@ void Menu::drawTools() {
 	
 	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-	if (ImGui::Button("Create")) {
-		std::cout << "CREATE" << std::endl;
-		_tool.setStrategy(Create);
+	if (ImGui::Button(" Create")) {
+		std::cout << "assign CREATE strategy" << std::endl;
+		// or using lambda function with [this]() {createAction(); };
+		_tool.setAction(std::bind(&Menu::createAction, this));
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Delete")) {
-		std::cout << "DELETE" << std::endl;
-		_tool.setStrategy(Delete);
+	if (ImGui::Button(" Delete")) {
+		std::cout << "assign DELETE strategy" << std::endl;
+		_tool.setAction(std::bind(&Menu::deleteAction, this));
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Extrude")) {
-		std::cout << "EXTRUDE" << std::endl;
-		_tool.setStrategy(Extrude);
+	if (ImGui::Button(" Extrude")) {
+		std::cout << "assign EXTRUDE strategy" << std::endl;
+		_tool.setAction(std::bind(&Menu::extrudeAction, this));
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Dig")) {
-		std::cout << "DIG" << std::endl;
-		_tool.setStrategy(Dig);
+	if (ImGui::Button(" Dig")) {
+		std::cout << "assign DIG strategy" << std::endl;
+		_tool.setAction(std::bind(&Menu::digAction, this));
 	}
 
 	ImGui::Spacing();
 
 	if (ImGui::Button("Paint")) {
 		std::cout << "PAINT" << std::endl;
-		_tool.setStrategy(Paint);
+		_tool.setAction(std::bind(&Menu::paintAction, this));
 	}
 	const char* items[] = { "BLUE", "RED", "GREEN", "BROWN", "YELLOW", "PURPLE", "GREY" };
 	static int item_current = 0;
@@ -81,4 +82,24 @@ void Menu::drawMenu() {
 		std::cout << "Import image" << std::endl;
 	
 	ImGui::End();
+}
+
+void Menu::createAction() {
+	_chunkPtr->setType(*_cursorPos, 0);
+}
+
+void Menu::deleteAction() {
+	_chunkPtr->delAt(*_cursorPos);
+}
+
+void Menu::digAction() {
+	std::cout << "dig function undefined yet" << std::endl;
+}
+
+void Menu::extrudeAction() {
+	std::cout << "dig function undefined yet" << std::endl;
+}
+
+void Menu::paintAction() {
+	std::cout << "paint function undefined yet" << std::endl;
 }

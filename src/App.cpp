@@ -17,7 +17,7 @@ App::App(int width, int height, const char* title) :
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
 	_relativeMouse(SDL_FALSE),
 	_chunk(6),
-	_menu(_cursor.getPointerPos()) {
+	_menu(_cursor.getPointerPos(), &_chunk) {
 
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
