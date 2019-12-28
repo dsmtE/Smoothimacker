@@ -8,24 +8,41 @@
 
 #include <iostream>
 
+#include <chrono>
+
 App::App(int width, int height, const char* title) : 
 	IApp(width, height, title),
 	_cam(glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
-	_relativeMouse(SDL_FALSE) ,
-	_menu(_cursor.getPointerPos()), 
-	_chunk(16) {
+	_relativeMouse(SDL_FALSE),
+	_chunk(6),
+	_menu(_cursor.getPointerPos()) {
+
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
-	//fill chunk 
+
+	auto t1 = std::chrono::high_resolution_clock::now();
+
+	//fill chunk
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
 			for (unsigned int k = 0; k < _chunk.size(); k++) {
-				_chunk.setCube(i, j, k, j); 
+				_chunk.setType(glm::uvec3(i, k, j), i); 
 			}
 		}
 	}
+
+	auto t2 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff1 = t2 - t1;
+	std::cout << "Elapsed time for add cube: " << diff1.count() << " s\n";
+
+	_chunk.updateAllFaceMask();
+
+	auto t3 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff2 = t3 - t2;
+	std::cout << "Elapsed time for mesh calc: " << diff2.count() << " s\n";
+
 }
 
 void App::handleEvents() {
