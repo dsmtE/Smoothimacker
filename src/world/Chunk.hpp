@@ -54,7 +54,7 @@ namespace world {
 		const uint8_t getType(const glm::uvec3 &pos);
 		/// del value in our data array and octree coresponding id
 		bool delAt(const glm::uvec3 &pos);
-		bool setType(const glm::uvec3 &pos, const uint8_t &type);
+		bool setType(const glm::uvec3& pos, const uint8_t& type, const bool updateFaceMask = true);
 
         //---------- Getters & Setters ----------//
 

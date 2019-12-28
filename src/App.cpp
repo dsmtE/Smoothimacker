@@ -16,8 +16,8 @@ App::App(int width, int height, const char* title) :
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
 	_relativeMouse(SDL_FALSE),
-	_menu(_cursor.getPointerPos()), 
-	_chunk(6) {
+	_chunk(6),
+	_menu(_cursor.getPointerPos(), &_chunk) {
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	
 	auto t1 = std::chrono::high_resolution_clock::now();
@@ -26,7 +26,7 @@ App::App(int width, int height, const char* title) :
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
 			for (unsigned int k = 0; k < _chunk.size(); k++) {
-				_chunk.setType(glm::uvec3(i, j, k), j); 
+				_chunk.setType(glm::uvec3(i, k, j), i); 
 			}
 		}
 	}

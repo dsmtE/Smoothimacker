@@ -31,10 +31,10 @@ namespace world {
 		// make there function from octree private
 		using ListLinkedOctree::getValue;
 		using ListLinkedOctree::delValue;
-		using ListLinkedOctree::setValue;
 		using ListLinkedOctree::getPtrValue;
 
 		public:
+
 		VoxelOctree(const unsigned int &depth = 0); // root constructor 
 		~VoxelOctree() = default;
 
@@ -46,8 +46,9 @@ namespace world {
 		uint8_t getType(const glm::uvec3 &pos);
 		/// del value in our data array and octree coresponding id
 		bool delAt(const glm::uvec3 &pos);
-		// TODO
-		bool setType(const glm::uvec3 &pos, const uint8_t &type,  const bool &updateFaceMask = true);
+		bool setType(const glm::uvec3 &pos, const uint8_t &type,  const bool updateFaceMask = true);
+		// delete replaced method
+		CubeVertex*& setValue(const glm::uvec3& pos, const CubeVertex& val) = delete;
 	};
 
 }// namespace world end

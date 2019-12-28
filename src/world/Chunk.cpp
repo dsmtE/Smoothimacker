@@ -81,8 +81,8 @@ bool Chunk::delAt(const glm::uvec3 &pos) {
 	return false;
 }
 
-bool Chunk::setType(const glm::uvec3 &pos, const uint8_t &type) {
-	if ( _cubes.setType(pos, type) ) {
+bool Chunk::setType(const glm::uvec3 &pos, const uint8_t &type, const bool updateFaceMask) {
+	if ( _cubes.setType(pos, type, updateFaceMask) ) {
 		// need update local our VBO data insted of update all with setVBOdata()
 		needUpdateVBO = true;
 		return true;

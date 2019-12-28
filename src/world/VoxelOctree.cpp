@@ -80,26 +80,27 @@ bool VoxelOctree::delAt(const glm::uvec3 &pos) {
         for(auto adjC : adjCubes) { // for each adjacents Cubes
             switch (adjC.first) {
                 case Up:
-                    (adjC.second)->faceMask -= 0x02;
+                    (adjC.second)->faceMask |=0x02;
                     break;
+
                 case Down:
-                    (adjC.second)->faceMask -= 0x01;
+                    (adjC.second)->faceMask |=0x01;
                     break;
 
                 case Left:
-                    (adjC.second)->faceMask -= 0x08;
+                    (adjC.second)->faceMask |=0x08;
                     break;
 
                 case Right:
-                    (adjC.second)->faceMask -= 0x04;
+                    (adjC.second)->faceMask |=0x04;
                     break;
 
                 case Front:
-                    (adjC.second)->faceMask -= 0x20;
+                    (adjC.second)->faceMask |=0x20;
                     break;
 
                 case Back:
-                    (adjC.second)->faceMask -= 0x10;
+                    (adjC.second)->faceMask |=0x10;
                     break;
 
                 default:
@@ -113,12 +114,13 @@ bool VoxelOctree::delAt(const glm::uvec3 &pos) {
     }
 }
 
-bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type, const bool &updateFaceMask) {
+bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type, const bool updateFaceMask) {
     unsigned int** idPtr = _octree.getOrCreateValue(pos);
 	if(*idPtr == nullptr) {
 		_data.emplace_back(pos, type, 0x3F); // alocate new value (0x3F (0b00111111) makes all sides visible by default)
         assert(_data.size() > 0);
 		*idPtr = new unsigned int(_data.size()-1); // create new in octree (new using reference)(destroyed in octree destructor)
+        _valueOctreePtr.push_back(idPtr); // save ptr to ptr to id in octree coresponding to value in data vector
 	} else {
         if(_data[**idPtr].type != type) {
 		    _data[**idPtr].type = type; // change value using copy constructor (reference of vector)
@@ -129,36 +131,36 @@ bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type, const bool
 
     if(updateFaceMask) {
         std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(pos);
-        CubeVertex cv = _data[**idPtr];
-        for(auto adjC : adjCubes) { // for each adjacents Cubes
+        CubeVertex &cv = _data[**idPtr];
+        for(auto &adjC : adjCubes) { // for each adjacents Cubes
             switch (adjC.first) {
                 case Up:
-                    cv.faceMask -= 0x01; // update mask at this position
-                    (adjC.second)->faceMask -= 0x02; // update mask on ajdacent position
+                    cv.faceMask &= 0x3F-0x01; // update mask at this position
+                    (adjC.second)->faceMask &= 0x3F-0x02; // update mask on ajdacent position
                     break;
                 case Down:
-                    cv.faceMask -= 0x02;
-                    (adjC.second)->faceMask -= 0x01;
+                    cv.faceMask &= 0x3F-0x02;
+                    (adjC.second)->faceMask &= 0x3F-0x01;
                     break;
-
+                // TODO fix left mask not work on set new type
                 case Left:
-                    cv.faceMask -= 0x04;
-                    (adjC.second)->faceMask -= 0x08;
+                    cv.faceMask &= 0x3F-0x04;
+                    (adjC.second)->faceMask &= 0x3F-0x08;
                     break;
 
                 case Right:
-                    cv.faceMask -= 0x08;
-                    (adjC.second)->faceMask -= 0x04;
+                    cv.faceMask &= 0x3F-0x08;
+                    (adjC.second)->faceMask &= 0x3F-0x04;
                     break;
 
                 case Front:
-                    cv.faceMask -= 0x10;
-                    (adjC.second)->faceMask -= 0x20;
+                    cv.faceMask &= 0x3F-0x10;
+                    (adjC.second)->faceMask &= 0x3F-0x20;
                     break;
 
                 case Back:
-                    cv.faceMask -= 0x20;
-                    (adjC.second)->faceMask -= 0x10;
+                    cv.faceMask &= 0x3F-0x20;
+                    (adjC.second)->faceMask &= 0x3F-0x10;
                     break;
 
                 default:
@@ -179,6 +181,7 @@ void VoxelOctree::updateAllFaceMask() {
                 case Up:
                     cv.faceMask -= 0x01;
                     break;
+
                 case Down:
                     cv.faceMask -= 0x02;
                     break;
