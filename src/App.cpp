@@ -12,12 +12,12 @@
 
 App::App(int width, int height, const char* title) : 
 	IApp(width, height, title),
-	_cam(glm::vec3(0, 0, 5.f)),
+	_cam(width, height, glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
-	_relativeMouse(SDL_FALSE),
-	_chunk(6),
-	_menu(_cursor.getPointerPos(), &_chunk) {
+	_chunk(5),
+	_settings(_cursor.getPointerPos(), _cam.getCameraSpeedPtr(), &_window),
+	_menu(&_chunk, &_settings) {
 
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
@@ -54,7 +54,7 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 	_cursor.handleEvent(sdlEvent);
 	_menu.handleEvent(sdlEvent);
 
-	_cam.handleRotationEvents(sdlEvent, _relativeMouse);
+	_cam.handleRotationEvents(sdlEvent, _settings.relativeMouse());
 	
 	// application event
 	switch (sdlEvent.type) {
@@ -70,12 +70,12 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_r) {
-				if (_relativeMouse) {
-					_relativeMouse = SDL_FALSE;
+				if (_settings.relativeMouse()) {
+					_settings.relativeMouse() = SDL_FALSE;
 				}else {
-					_relativeMouse = SDL_TRUE; 
+					_settings.relativeMouse() = SDL_TRUE;
 				}
-				SDL_SetRelativeMouseMode(_relativeMouse);
+				SDL_SetRelativeMouseMode(_settings.relativeMouse());
 			}
 			else {
 				//printf("Keycode: %s (%d) Scancode: %s (%d) \n",
@@ -92,15 +92,13 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 }
 
 void App::loop() {
-	int w = windowSize().x;
-	int h = windowSize().y;
 	while (isRunning()) {
 		beginFrame();
 		_menu.drawMenu();
-		_chunk.draw(_cam, w, h, _chunkShader);
+		_chunk.draw(_cam, _chunkShader);
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
-		_cursor.draw(_cam, w, h, _cursorShader);
+		_cursor.draw(_cam, _cursorShader);
 
 		endFrame();
 	}

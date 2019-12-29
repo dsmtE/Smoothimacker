@@ -4,15 +4,16 @@
 
 #include "Tool.hpp"
 #include "../world/Chunk.hpp"
+#include "../AppSettings.hpp"
 
 namespace gui {
 	
 	class Menu {
 	
 	private:
-		glm::ivec3* _cursorPos;
 		Tool _tool;
-		world::Chunk* _chunkPtr;
+		world::Chunk *_chunkPtr;
+		AppSettings *_settings;
 	
 		void createAction();
 		void deleteAction();
@@ -21,7 +22,7 @@ namespace gui {
 		void paintAction();
 
 	public:
-		Menu(glm::ivec3* cursorPointer, world::Chunk* chunkPtr);
+		Menu(world::Chunk* chunkPtr, AppSettings *settings);
 		~Menu() = default;
 
 		void handleEvent(SDL_Event sdlEvent);
@@ -29,8 +30,7 @@ namespace gui {
 		void drawTools();
 		void editCursorPos();
 		void drawMenu();
+		void drawMenuBar();
 
-
-		//inline void setPointerCursorPos(glm::ivec3 *cursorPos) { cursorPos = _cursorPos; };
 	};
 }

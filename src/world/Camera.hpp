@@ -31,6 +31,10 @@ namespace world {
 	class Camera {
 
 	private:
+
+		int _screenWidth;
+		int _screenHeigh;
+
 		glm::vec3 _position;
 		glm::vec3 _worldUp;
 
@@ -53,15 +57,20 @@ namespace world {
 
 	public:
 		// Constructor with vectors
-		Camera(const glm::vec3 &position = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3 &worldUp = glm::vec3(0.0f, 1.0f, 0.0f), const float &yaw = YAW, const float &pitch = PITCH);
+		Camera(const int &screenWidth, const int &screenHeigh, const glm::vec3 &position = glm::vec3(0.0f, 0.0f, 0.0f), 
+				const glm::vec3 &worldUp = glm::vec3(0.0f, 1.0f, 0.0f), 
+				const float &yaw = YAW, 
+				const float &pitch = PITCH);
 
 		glm::mat4 viewMatrix() const;
-		glm::mat4 projectionMatrix(const int& screenWidth, const int& screenHeigh) const;
-		glm::mat4 PVMatrix(const int& screenWidth, const int& screenHeigh) const;
+		// glm::mat4 projectionMatrix(const int& screenWidth, const int& screenHeigh) const;
+		glm::mat4 projectionMatrix() const;
+		// glm::mat4 PVMatrix(const int& screenWidth, const int& screenHeigh) const;
+		glm::mat4 PVMatrix() const;
 		inline float getZoom() const { return _zoom; }
 		inline glm::vec3 getFrontDir() const { return _front; }
+		inline float* getCameraSpeedPtr() { return &_movementSpeed; };
 
-		
 		// input fonctions
         void handleEvents(const unsigned int &deltaTime);
 		void handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &relativeMouse);

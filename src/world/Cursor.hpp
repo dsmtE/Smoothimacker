@@ -36,7 +36,7 @@ namespace world {
         Cursor(const glm::vec3 &color = glm::vec3(0, 0, 1));
         ~Cursor() = default;
         
-        void draw(const Camera &cam, const int& screenWidth, const int& screenHeigh, openGL::Shader &shader);
+        void draw(const Camera &cam, openGL::Shader &shader);
 
         glm::mat4 modelMatrix() const;
 

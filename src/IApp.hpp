@@ -6,7 +6,6 @@ class IApp {
 protected:
 	// Attributs
 	openGL::SDLWinWrapper _window;
-	bool _running;
 
 	unsigned int _deltaTime;
 	unsigned int _lastTime;
@@ -24,11 +23,11 @@ public:
 	virtual void beginFrame();
 	virtual void endFrame();
 
-	inline void exit() { _running = false; };
+	inline void exit() { _window.exit(); };
 
 	// get & set
 	inline openGL::SDLWinWrapper& getWinWrapper() { return _window; };
-	inline bool isRunning() const { return _running; };
+	inline bool isRunning() const { return _window.isRunning(); };
 
 	inline unsigned int getLastTime() const { return _lastTime; };
 	inline unsigned int getDeltaTime() const { return _deltaTime; };

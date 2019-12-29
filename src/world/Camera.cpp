@@ -8,11 +8,12 @@ using namespace world;
 //         ^ /
 //         |/
 //         .---->(X)
-Camera::Camera(const glm::vec3 &position, const glm::vec3 &worldUp, const float &yaw, const float &pitch) : 
-    _position(position), _worldUp(worldUp), _yaw(yaw), _pitch(pitch), _movementSpeed(SPEED), _mouseSensitivity(SENSITIVITY), _zoom(ZOOM), _hasChanged(false) {
+
+Camera::Camera(const int &screenWidth, const int &screenHeigh, const glm::vec3 &position, const glm::vec3 &worldUp, const float &yaw, const float &pitch) : 
+    _screenWidth(screenWidth), _screenHeigh(screenHeigh), _position(position), _worldUp(worldUp), _yaw(yaw), _pitch(pitch), _movementSpeed(SPEED), 
+	_mouseSensitivity(SENSITIVITY), _zoom(ZOOM), _hasChanged(false) {
 	updateVectors();
 }
-
 void Camera::updateVectors() {
     // Calculate the new Front vector
     glm::vec3 front;
@@ -116,12 +117,12 @@ void Camera::handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &rel
 }
 
 
-glm::mat4 Camera::PVMatrix(const int& screenWidth, const int& screenHeigh) const {
-	return projectionMatrix(screenWidth, screenHeigh) * viewMatrix();
+glm::mat4 Camera::PVMatrix() const {
+	return projectionMatrix() * viewMatrix();
 }
 
-glm::mat4 Camera::projectionMatrix(const int& screenWidth, const int& screenHeigh) const { 
-	return glm::perspective(glm::radians(_zoom), float(screenWidth)  / float(screenHeigh), 0.1f, 200.0f);
+glm::mat4 Camera::projectionMatrix() const { 
+	return glm::perspective(glm::radians(_zoom), float(_screenWidth)  / float(_screenHeigh), 0.1f, 200.0f);
 }
 
 glm::mat4 Camera::viewMatrix() const { 

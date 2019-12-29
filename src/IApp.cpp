@@ -10,7 +10,7 @@
 #include "openGL/glException.hpp"
 
 IApp::IApp(int width, int height, const char* title) :
-	_running(true), _window(width, height, title), _deltaTime(0), _lastTime(SDL_GetTicks()) {
+	 _window(width, height, title), _deltaTime(0), _lastTime(SDL_GetTicks()) {
 
 }
 

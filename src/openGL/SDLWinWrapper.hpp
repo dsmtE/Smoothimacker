@@ -30,7 +30,10 @@ namespace openGL {
         inline SDL_Window* getWindow() const { return _window; }
         inline SDL_GLContext getContext() const { return _glContext; }
 		glm::ivec2 getMouseCoord() const;
+        glm::ivec2 windowSize() const;
 
+        inline void exit() { _running = false; };
+        inline bool isRunning() const { return _running; };
 
     };
 

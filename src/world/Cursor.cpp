@@ -47,11 +47,11 @@ Cursor::Cursor(const glm::vec3 &color) : _position(0,0,0), _color(color), _camRe
     _VAO.unbind(); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
 }
 
-void Cursor::draw(const Camera &cam, const int& screenWidth, const int& screenHeigh, openGL::Shader &shader) {
+void Cursor::draw(const Camera &cam, openGL::Shader &shader) {
     shader.bind();
     // send uniform to shader
     shader.setVec3f("cursorColor", _color);
-    shader.setMat4("MVPMatrix", cam.PVMatrix(screenWidth, screenHeigh) * modelMatrix());
+    shader.setMat4("MVPMatrix", cam.PVMatrix() * modelMatrix());
 
     _VAO.bind();
     glDrawArrays(GL_LINE_STRIP, 0, _vertices.size());

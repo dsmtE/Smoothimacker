@@ -45,7 +45,7 @@ namespace world {
 
         //---------- Methods ----------//
 
-		void draw(const Camera &c, const int& screenWidth, const int& screenHeigh, openGL::Shader &s);
+		void draw(const Camera &c, openGL::Shader &s);
 
         // cubes setters and getters
 

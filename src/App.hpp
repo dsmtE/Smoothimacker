@@ -7,8 +7,9 @@
 #include "openGL/Shader.hpp"
 #include "world/Chunk.hpp"
 #include "gui/Menu.hpp"
-
 #include <SDL.h>
+
+#include "AppSettings.hpp"
 
 class App : public IApp {
 private:
@@ -20,7 +21,7 @@ private:
 	world::Chunk _chunk;
 	gui::Menu _menu;
 
-	SDL_bool _relativeMouse; // handle mouse rotation with mouse
+	AppSettings _settings;
 
 	// methods
 	void handleSDLEvents(SDL_Event sdlEvent) override;
@@ -30,8 +31,4 @@ public:
 	App(int width, int height, const char* title);
 
 	void loop();
-
-	// inline world::Camera& getCam() { return _cam; };
-	// inline world::Cursor& getCursor() { return _cursor; };
-
 };

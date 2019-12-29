@@ -11,7 +11,7 @@ using namespace world;
 
 Chunk::Chunk(const unsigned int &depth, const glm::uvec3 &pos) :  _position(pos), _cubes(depth), needUpdateVBO(false) {
 	// limit chunk size
-    assert(depth <= 7); // limit chunk by (2^7)^3 = 2 097 152 elements 
+    assert(depth <= 8); // limit chunk by (2^7)^3 = 2 097 152 elements 
 	buildVAO();
 }
 
@@ -44,7 +44,7 @@ void Chunk::setVBOdata() {
 // 	return pos;
 // }
 
-void Chunk::draw(const world::Camera &c, const int& screenWidth, const int& screenHeigh,  openGL::Shader &s) {
+void Chunk::draw(const world::Camera &c,  openGL::Shader &s) {
 	if (needUpdateVBO) {
 		setVBOdata(); // update data in VBO
 		needUpdateVBO = false;
@@ -55,7 +55,7 @@ void Chunk::draw(const world::Camera &c, const int& screenWidth, const int& scre
 
 		// s.setInt("chunkSize", size());
 		const glm::mat4 MVMatrix = c.viewMatrix() * getModelMatrix();
-		s.setMat4("MVPMatrix", c.projectionMatrix(screenWidth, screenHeigh) * MVMatrix);
+		s.setMat4("MVPMatrix", c.projectionMatrix() * MVMatrix);
         // TODO add support of normal matrix for light
 		// s.setMat3("NormalMatrix", glm::inverseTranspose(glm::mat3(MVMatrix)));
 

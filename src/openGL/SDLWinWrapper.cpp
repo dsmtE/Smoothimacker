@@ -59,7 +59,7 @@ glm::ivec2 SDLWinWrapper::getMouseCoord() const {
 	return coord;
 }
 
-SDLWinWrapper::SDLWinWrapper(int width, int height, const char* title) {
+SDLWinWrapper::SDLWinWrapper(int width, int height, const char* title) : _running(true) {
         
     initSDL();
 
@@ -68,7 +68,7 @@ SDLWinWrapper::SDLWinWrapper(int width, int height, const char* title) {
         title,
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // or SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         width, height,
-        SDL_WINDOW_OPENGL
+        SDL_WINDOW_OPENGL //| SDL_WINDOW_FULLSCREEN_DESKTOP
     );
 
     // Create OpenGL context
@@ -102,4 +102,11 @@ SDLWinWrapper::~SDLWinWrapper() {
     //sdl shutdown
     SDL_DestroyWindow(_window);
     SDL_Quit();
+}
+
+
+glm::ivec2 SDLWinWrapper::windowSize() const {
+    glm::ivec2 size;
+    SDL_GetWindowSize(_window, &(size.x), &(size.y));
+    return size;
 }
