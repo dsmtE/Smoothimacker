@@ -100,14 +100,14 @@ void Camera::handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &rel
 		case SDL_MOUSEBUTTONDOWN:
 			if(sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
 				_enableCamRotation = SDL_TRUE;
-				std::cout << "enable CamRotation" << std::endl; 
+				// std::cout << "enable CamRotation" << std::endl; 
 			}
 			break;
 
 		case SDL_MOUSEBUTTONUP:
 			if(sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
 				_enableCamRotation = SDL_FALSE;
-				std::cout << "disable CamRotation" << std::endl; 
+				// std::cout << "disable CamRotation" << std::endl; 
 			}
 			break;
 
