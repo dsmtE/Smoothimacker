@@ -1,4 +1,6 @@
 #include <glm/glm.hpp>
+#include "../world/Chunk.hpp"
+#include <array>
 
 namespace imath {
 
@@ -14,9 +16,11 @@ namespace imath {
 		Ray();
 		Ray(const glm::vec3& o, const glm::vec3& d);
 		/// if it colid with box on point p return t value ( o+t*d = p) else return 0
-		unsigned int colidWithBox(const glm::vec3 &min, const glm::vec3 &max);
+		bool colidWithBox(const std::array<glm::vec3, 2> &boxbounds, float &t);
+		bool planeIntersect(const glm::vec3 p, const glm::vec3 n, float& t);
 		
 		inline glm::vec3 origin() { return _origin; };
 		inline glm::vec3 dir() { return _dir; };
 	};
+	
 }
