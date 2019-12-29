@@ -2,7 +2,7 @@
 #include<math.h>
 #include <Eigen/Dense>
 
-#include <RadialBasisFunction.hpp>
+#include "RadialBasisFunction.hpp"
 
 using namespace imath;
 
@@ -33,5 +33,6 @@ Eigen::VectorXf rbf::computeOmega(const std::vector<Eigen::Vector2f> &controle_p
 Eigen::VectorXf  rbf::interpolate(const std::vector<Eigen::Vector2f> &evaluation_pts, const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values, float radialFunction(float, float)) {
 	Eigen::VectorXf w = rbf::computeOmega(controle_pts, controle_pts_Values , radialFunction);
 	// TODO return value at evaluation_pts with sum fonction
+	return w;
 }
 
