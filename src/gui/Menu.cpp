@@ -5,6 +5,7 @@
 #include <imgui/imgui_impl_sdl.h>
 
 #include <iostream>
+#include "../imath/util.hpp"
 
 #include "../world/Cursor.hpp"
 
@@ -61,9 +62,9 @@ void Menu::drawTools() {
 
 void Menu::editCursorPos() {
 	ImGui::Text("Cursor position");
-	ImGui::InputInt("X", &(_settings->cursorPos()->x));
-	ImGui::InputInt("Y", &(_settings->cursorPos()->y));
-	ImGui::InputInt("Z", &(_settings->cursorPos()->z));
+	ImGui::InputInt("X", &(_settings->_cursorPos->x));
+	ImGui::InputInt("Y", &(_settings->_cursorPos->y));
+	ImGui::InputInt("Z", &(_settings->_cursorPos->z));
 	ImGui::Spacing();
 }
 
@@ -89,12 +90,12 @@ void Menu::drawMenuBar() {
 
 		if (ImGui::BeginMenu("Options")) {
 
-			if (ImGui::Checkbox("enable rayCasting", &_settings->rayCasting()))
+			ImGui::Checkbox("enable rayCasting", &(_settings->_rayCastingEnable));
 
-				ImGui::Spacing();
+			ImGui::Spacing();
 
 			ImGui::Text("camera speed");
-			ImGui::SliderFloat("camSpeed", _settings->CameraSpeed(), AppSettings::camMinSpeed, AppSettings::camMaxSpeed);
+			ImGui::SliderFloat("camSpeed", _settings->_cameraSpeed, AppSettings::camMinSpeed, AppSettings::camMaxSpeed);
 
 			ImGui::EndMenu();
 		}
@@ -117,6 +118,25 @@ void Menu::drawMenu() {
 
 	if (ImGui::Button("Generate map"))
 		std::cout << "generate map" << std::endl;
+		//TODO
+	ImGui::Spacing();
+
+	if (ImGui::Button("random control pts")) {
+		_settings->_controlPts->resetControlPts();
+		for (size_t i = 0; i < _settings->_nbRandomControlPts; i++){
+			_settings->_controlPts->addControlPts(imath::genVec3(_settings->_chunkPtr->size()));
+		}
+	}
+	ImGui::Text("number of control pts:");
+	ImGui::InputInt("", &(_settings->_nbRandomControlPts));
+	assert(_settings->_nbRandomControlPts >= 0);
+	ImGui::Spacing();
+
+	if (ImGui::Button("cursor add control pt")) {
+		_settings->_controlPts->addControlPts(*(_settings->_cursorPos));
+		_settings->_nbRandomControlPts++;
+	}
+
 	ImGui::Spacing();
 
 	if (ImGui::Button("Import image"))
@@ -127,11 +147,11 @@ void Menu::drawMenu() {
 
 // action callBack functions
 void Menu::createAction() {
-	_chunkPtr->setColor(*(_settings->cursorPos()), glm::vec3(1, 1, 0.9));
+	_chunkPtr->setColor(*(_settings->_cursorPos), glm::vec3(1, 1, 0.9));
 }
 
 void Menu::deleteAction() {
-	_chunkPtr->delAt(*(_settings->cursorPos()));
+	_chunkPtr->delAt(*(_settings->_cursorPos));
 }
 
 void Menu::digAction() {

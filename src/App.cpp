@@ -17,12 +17,17 @@ App::App(int width, int height, const char* title) :
 	_cam(width, height, glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
+	_controlPtsShader("assets/shaders/controlPts.vert", "assets/shaders/controlPts.frag"),
 	_chunk(5),
-	_settings(_cursor.getPointerPos(), _cam.getCameraSpeedPtr(), &_window),
+	_controlPts(),
+	_settings(_cursor.getPointerPos(), _cam.getCameraSpeedPtr(), &_chunk, &_window, &_controlPts),
 	_menu(&_chunk, &_settings) {
 
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
+
+	_controlPts.addControlPts(glm::vec3(2,2,2));
+	_controlPts.addControlPts(glm::vec3(6,6,6));
 
 	auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -56,7 +61,7 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 	_cursor.handleEvent(sdlEvent);
 	_menu.handleEvent(sdlEvent);
 
-	_cam.handleRotationEvents(sdlEvent, _settings.relativeMouse());
+	_cam.handleRotationEvents(sdlEvent, _settings._relativeMouse);
 	
 	// application event
 	switch (sdlEvent.type) {
@@ -72,12 +77,12 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_r) {
-				if (_settings.relativeMouse()) {
-					_settings.relativeMouse() = SDL_FALSE;
+				if (_settings._relativeMouse) {
+					_settings._relativeMouse = SDL_FALSE;
 				}else {
-					_settings.relativeMouse() = SDL_TRUE;
+					_settings._relativeMouse = SDL_TRUE;
 				}
-				SDL_SetRelativeMouseMode(_settings.relativeMouse());
+				SDL_SetRelativeMouseMode(_settings._relativeMouse);
 			}
 			else {
 				//printf("Keycode: %s (%d) Scancode: %s (%d) \n",
@@ -101,6 +106,7 @@ void App::loop() {
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
 		_cursor.draw(_cam, _cursorShader);
+		_controlPts.draw(_cam, _controlPtsShader);
 
 		endFrame();
 	}
