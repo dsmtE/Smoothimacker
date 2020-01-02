@@ -26,6 +26,8 @@ namespace world {
         glm::ivec3 _position;
         glm::vec3 _color;
 
+        glm::ivec3 _minLimit, _maxLimit;
+
         openGL::VertexArray _VAO;
         openGL::VertexBuffer _VBO;
 
@@ -33,7 +35,7 @@ namespace world {
 
     public:
 
-        Cursor(const glm::vec3 &color = glm::vec3(0, 0, 1));
+        Cursor(const unsigned int &minLimit, const unsigned int &maxLimit, const glm::vec3 &color = glm::vec3(0, 0, 1));
         ~Cursor() = default;
         
         void draw(const Camera &cam, openGL::Shader &shader);

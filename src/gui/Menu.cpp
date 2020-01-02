@@ -5,6 +5,7 @@
 #include <imgui/imgui_impl_sdl.h>
 
 #include <iostream>
+#include <algorithm> // for clamp
 #include "../imath/util.hpp"
 
 #include "../world/Cursor.hpp"
@@ -62,9 +63,15 @@ void Menu::drawTools() {
 
 void Menu::editCursorPos() {
 	ImGui::Text("Cursor position");
-	ImGui::InputInt("X", &(_settings->_cursorPos->x));
-	ImGui::InputInt("Y", &(_settings->_cursorPos->y));
-	ImGui::InputInt("Z", &(_settings->_cursorPos->z));
+	if ( ImGui::InputInt("X", &(_settings->_cursorPos->x))  ) {
+		_settings->_cursorPos->x = std::clamp( _settings->_cursorPos->x, 0, int(_settings->_chunkPtr->size()) );
+	}
+	if ( ImGui::InputInt("Y", &(_settings->_cursorPos->y))  ) {
+		_settings->_cursorPos->y = std::clamp( _settings->_cursorPos->y, 0, int(_settings->_chunkPtr->size()) );
+	}
+	if ( ImGui::InputInt("Z", &(_settings->_cursorPos->z))  ) {
+		_settings->_cursorPos->z = std::clamp( _settings->_cursorPos->z, 0, int(_settings->_chunkPtr->size()) );
+	}
 	ImGui::Spacing();
 }
 
