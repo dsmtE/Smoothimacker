@@ -14,7 +14,7 @@
 // #include "../imath/util.hpp"
 
 namespace world {
-
+	
 	class Chunk {
 
 	private:

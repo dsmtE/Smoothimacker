@@ -6,6 +6,7 @@
 
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/color_space.hpp>
+#include <glm/glm.hpp>
 
 #include <iostream>
 
@@ -18,16 +19,16 @@ App::App(int width, int height, const char* title) :
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
 	_controlPtsShader("assets/shaders/controlPts.vert", "assets/shaders/controlPts.frag"),
-	_chunk(5),
+	_gridShader("assets/shaders/grid.vert", "assets/shaders/grid.frag"),
+	_chunk(6),
 	_controlPts(),
+	_cursor(0, _chunk.size()),
+	_grid(_chunk.size()),
 	_settings(_cursor.getPointerPos(), _cam.getCameraSpeedPtr(), &_chunk, &_window, &_controlPts),
 	_menu(&_chunk, &_settings) {
 
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
-
-	_controlPts.addControlPts(glm::vec3(2,2,2));
-	_controlPts.addControlPts(glm::vec3(6,6,6));
 
 	auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -103,6 +104,7 @@ void App::loop() {
 		beginFrame();
 		_menu.drawMenu();
 		_chunk.draw(_cam, _chunkShader);
+		_grid.draw(_cam, _gridShader);
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
 		_cursor.draw(_cam, _cursorShader);

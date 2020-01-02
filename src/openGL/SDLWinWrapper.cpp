@@ -90,6 +90,8 @@ SDLWinWrapper::SDLWinWrapper(int width, int height, const char* title) : _runnin
     //others openGL settings
     
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 

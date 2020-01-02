@@ -92,10 +92,10 @@ bool Chunk::setColor(const glm::uvec3 &pos, const glm::vec3 &color, const bool u
 
 glm::mat4 Chunk::getModelMatrix() const {
 	glm::mat4 m(1.0f);
-	m = glm::translate(m, glm::vec3(_position * unsigned int( _cubes.size() )));
+	m = glm::translate(m, glm::vec3(_position * size() ));
 	return m;
 }
 
-unsigned int  Chunk::size() const {
+unsigned int Chunk::size() const {
 	return _cubes.size();
 };
