@@ -51,10 +51,10 @@ namespace world {
 
 		/// return type at given position if exist else throw string error 
 		/// catch(string const& str) {cerr << str << endl; }
-		const uint8_t getType(const glm::uvec3 &pos);
+		const glm::vec3 getColor(const glm::uvec3 &pos);
 		/// del value in our data array and octree coresponding id
 		bool delAt(const glm::uvec3 &pos);
-		bool setType(const glm::uvec3& pos, const uint8_t& type, const bool updateFaceMask = true);
+		bool setColor(const glm::uvec3& pos, const glm::vec3 &color, const bool updateFaceMask = true);
 
         //---------- Getters & Setters ----------//
 

@@ -127,7 +127,7 @@ void Menu::drawMenu() {
 
 // action callBack functions
 void Menu::createAction() {
-	_chunkPtr->setType(*(_settings->cursorPos()), 0);
+	_chunkPtr->setColor(*(_settings->cursorPos()), glm::vec3(1, 1, 0.9));
 }
 
 void Menu::deleteAction() {

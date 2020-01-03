@@ -69,8 +69,8 @@ std::vector<std::pair<Direction, CubeVertex*>> VoxelOctree::getAdjacentsCubes(co
 	return existingCubes;
 }
 
-uint8_t VoxelOctree::getType(const glm::uvec3 &pos) {
-    return getValue(pos).type;
+glm::vec3 VoxelOctree::getColor(const glm::uvec3 &pos) {
+    return getValue(pos).color;
 }
 
 bool VoxelOctree::delAt(const glm::uvec3 &pos) {   
@@ -114,16 +114,16 @@ bool VoxelOctree::delAt(const glm::uvec3 &pos) {
     }
 }
 
-bool VoxelOctree::setType(const glm::uvec3 &pos, const uint8_t &type, const bool updateFaceMask) {
+bool VoxelOctree::setColor(const glm::uvec3 &pos, const glm::vec3 &color, const bool updateFaceMask) {
     unsigned int** idPtr = _octree.getOrCreateValue(pos);
 	if(*idPtr == nullptr) {
-		_data.emplace_back(pos, type, 0x3F); // alocate new value (0x3F (0b00111111) makes all sides visible by default)
+		_data.emplace_back(pos, color, 0x3F); // alocate new value (0x3F (0b00111111) makes all sides visible by default)
         assert(_data.size() > 0);
 		*idPtr = new unsigned int(_data.size()-1); // create new in octree (new using reference)(destroyed in octree destructor)
         _valueOctreePtr.push_back(idPtr); // save ptr to ptr to id in octree coresponding to value in data vector
 	} else {
-        if(_data[**idPtr].type != type) {
-		    _data[**idPtr].type = type; // change value using copy constructor (reference of vector)
+        if(_data[**idPtr].color != color) {
+		    _data[**idPtr].color = color; // change value using copy constructor (reference of vector)
         } else {
             return false;
         }

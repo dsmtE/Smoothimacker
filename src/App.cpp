@@ -5,10 +5,12 @@
 #include <imgui/imgui_impl_sdl.h>
 
 #include <glm/gtx/norm.hpp>
+#include <glm/gtx/color_space.hpp>
 
 #include <iostream>
 
 #include <chrono>
+
 
 App::App(int width, int height, const char* title) : 
 	IApp(width, height, title),
@@ -28,8 +30,8 @@ App::App(int width, int height, const char* title) :
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
 			for (unsigned int k = 0; k < _chunk.size(); k++) {
-				_chunk.setType(glm::uvec3(i, k, j), i); 
-			}
+				_chunk.setColor(glm::uvec3(i, k, j), glm::rgbColor( glm::vec3(float(k+1)/float(_chunk.size()) * 360.0f, 0.6f, 1.0f)));
+			} 
 		}
 	}
 

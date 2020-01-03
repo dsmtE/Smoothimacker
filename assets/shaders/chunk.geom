@@ -5,13 +5,13 @@ layout(triangle_strip, max_vertices = 24) out;
 
 // in
 in VS_OUT {
-    flat uint type;
+    vec3 color;
     flat uint faceMask;
 } gs_in[];
 
 //out
 out GS_OUT {
-    flat uint type;
+    vec3 color;
     flat uint faceMask;
     vec2 textCoord;
 } gs_out;
@@ -143,7 +143,7 @@ void emitBox(vec4 position) {
 }
 
 void main() {
-    gs_out.type = gs_in[0].type;
+    gs_out.color = gs_in[0].color;
     gs_out.faceMask = gs_in[0].faceMask;
     emitBox(gl_in[0].gl_Position);
 }

@@ -21,12 +21,12 @@ bool Chunk::validCoordinate(const glm::uvec3 &pos) const {
 
 void Chunk::buildVAO() {  
 		const GLuint pos = 0;
-		const GLuint type = 1;
+		const GLuint color = 1;
 		const GLuint faceMask = 2;
 		_VAO.bind();
 		_VBO.bind();
 		openGL::VertexBuffer::setVertexAttribInteger(pos, 3, GL_UNSIGNED_INT, sizeof(CubeVertex), offsetof(CubeVertex, pos));
-		openGL::VertexBuffer::setVertexAttribInteger(type, 1, GL_UNSIGNED_BYTE, sizeof(CubeVertex), offsetof(CubeVertex, type));
+		openGL::VertexBuffer::setVertexAttrib(color, 3, GL_FLOAT, sizeof(CubeVertex), offsetof(CubeVertex, color));
 		openGL::VertexBuffer::setVertexAttribInteger(faceMask, 1, GL_UNSIGNED_BYTE, sizeof(CubeVertex), offsetof(CubeVertex, faceMask));
 		_VBO.unbind();
 		_VAO.unbind();
@@ -68,8 +68,8 @@ void Chunk::draw(const world::Camera &c,  openGL::Shader &s) {
 }
 
 
-const uint8_t Chunk::getType(const glm::uvec3 &pos) {
-	return _cubes.getType(pos);
+const glm::vec3 Chunk::getColor(const glm::uvec3 &pos) {
+	return _cubes.getColor(pos);
 }
 
 bool Chunk::delAt(const glm::uvec3 &pos) {
@@ -81,8 +81,8 @@ bool Chunk::delAt(const glm::uvec3 &pos) {
 	return false;
 }
 
-bool Chunk::setType(const glm::uvec3 &pos, const uint8_t &type, const bool updateFaceMask) {
-	if ( _cubes.setType(pos, type, updateFaceMask) ) {
+bool Chunk::setColor(const glm::uvec3 &pos, const glm::vec3 &color, const bool updateFaceMask) {
+	if ( _cubes.setColor(pos, color, updateFaceMask) ) {
 		// need update local our VBO data insted of update all with setVBOdata()
 		needUpdateVBO = true;
 		return true;

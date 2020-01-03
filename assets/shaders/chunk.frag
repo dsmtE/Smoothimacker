@@ -4,7 +4,7 @@ out vec4 FragColor;
 
 
 in GS_OUT {
-    flat uint type;
+    vec3 color;
     flat uint faceMask;
     vec2 textCoord;
 } fs_in;
@@ -17,7 +17,7 @@ vec3 hsv2rgb(vec3 c) {
 }
 
 void main() {
-    vec3 typeColor = hsv2rgb(vec3(float(fs_in.type)/(2.0*16.0), 0.8, 0.8));
-    vec3 colorFromTextCoord = vec3(fs_in.textCoord.x, fs_in.textCoord.y, 1.0f);
-    FragColor = vec4(typeColor * 0.9 + colorFromTextCoord * 0.1, 1.0f);
+    // vec3 typeColor = hsv2rgb(vec3(float(fs_in.type)/(2.0*16.0), 0.8, 0.8));
+    vec3 colorFromTextCoord = vec3(fs_in.textCoord.x, fs_in.textCoord.y, 1.0);
+    FragColor = vec4(fs_in.color * 0.9 + colorFromTextCoord * 0.1, 1.0);
 }
