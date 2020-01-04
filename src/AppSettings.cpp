@@ -11,7 +11,9 @@ AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, openGL::SDLW
 	_cameraSpeed(cameraSpeed),
 	_winPtr(winPtr),
 	_rayCastingEnable(false),
-	_relativeMouse(SDL_FALSE) {
+	_relativeMouse(SDL_FALSE),
+	_sunDir(1.0f, -1.0f, 1.0f),
+	_sunColor(1.0f, 1.0f, 1.0f) {
 }
 
 glm::ivec2 AppSettings::windowSize() const {

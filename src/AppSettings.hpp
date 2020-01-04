@@ -14,6 +14,10 @@ private:
 	bool _rayCastingEnable;
 	SDL_bool _relativeMouse; // handle mouse rotation with mouse
 
+	// light settings
+	glm::vec3 _sunDir;
+	glm::vec3 _sunColor;
+
 public:
 
 	//static attributs
@@ -28,6 +32,8 @@ public:
 	inline float* CameraSpeed() { return _cameraSpeed; };
 	inline bool& rayCasting() { return _rayCastingEnable; };
 	inline SDL_bool& relativeMouse() { return _relativeMouse; };
+	inline glm::vec3& sunColor() { return _sunColor; }; 
+	inline glm::vec3& sunDir() { return _sunDir; };
 
 	glm::ivec2 windowSize() const;
 	inline void exit() { _winPtr->exit(); };
