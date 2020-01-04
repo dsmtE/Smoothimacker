@@ -18,34 +18,23 @@
 
 namespace world {
 
-    class Cursor {
+    class Grid {
 
     private:
 
-        std::vector<glm::vec3> _vertices;
-        glm::ivec3 _position;
+        std::vector<glm::vec2> _vertices;
         glm::vec3 _color;
-
-        glm::ivec3 _minLimit, _maxLimit;
+        unsigned int _size; 
 
         openGL::VertexArray _VAO;
         openGL::VertexBuffer _VBO;
 
-        Camera* _camReferenceForMove;
 
     public:
 
-        Cursor(const unsigned int &minLimit, const unsigned int &maxLimit, const glm::vec3 &color = glm::vec3(0, 0, 1));
-        ~Cursor() = default;
-        
+        Grid(const unsigned int &size, const glm::vec3 &color = glm::vec3(0.3f));
+        ~Grid() = default;
         void draw(const Camera &cam, openGL::Shader &shader);
-
-        glm::mat4 modelMatrix() const;
-
         void handleEvent(SDL_Event sdlEvent);
-
-        inline glm::ivec3* getPointerPos() { return &_position; };
-        inline void setPos(const glm::ivec3 p) { _position = p; };
-        inline void setCameraReference(Camera &c) { _camReferenceForMove = &c; };
     };
 }

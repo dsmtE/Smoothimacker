@@ -60,6 +60,8 @@ namespace world {
 		bool delValue(const glm::uvec3& pos);
 		/// set value if aleady exist, create new if not exist using copy constuctor of T
 		T*& setValue(const glm::uvec3& pos, const T& val);
+
+		void cleanValues();
 	};
 
 	template <typename T>
@@ -69,10 +71,9 @@ namespace world {
 		//---------- Variables ----------//
 		std::vector<T> _data; // array where data are store
 		Octree<unsigned int> _octree; // octree where data are processed by storing coresponding id
-		std::vector<unsigned int**> _valueOctreePtr; // storing pointer of the pointer witch storing id in octree (used to remove value with complexity in O(1))	const uint8_t _depth;
+		std::vector<unsigned int**> _valueOctreePtr; // storing pointer of the pointer witch storing id in octree (used to remove value with complexity in O(1))
 
 		//---------- private functions ----------//
-		// TODO
 		/// swap the value passed in parameter with the last element of our array
 		void swapWithEnd(unsigned int*& id);
 
@@ -95,6 +96,8 @@ namespace world {
 		bool delValue(const glm::uvec3& pos);
 		/// set value at given position
 		bool setValue(const glm::uvec3& pos, const T& val);
+
+		void reset();
 	};
 
 	template <typename T>
@@ -160,6 +163,13 @@ namespace world {
 		}
 	}
 
+	template <typename T>
+	void ListLinkedOctree<T>::reset() {
+		_data.clear();
+		_valueOctreePtr.clear();
+		_octree.cleanValues();
+	}
+
 	// -------------------------------------------------------------- //
 	// --------------------------- Octree --------------------------- //
 	// -------------------------------------------------------------- //
@@ -213,6 +223,27 @@ namespace world {
 	}
 
 	template <typename T>
+	void Octree<T>::cleanValues() {
+		if (_val != nullptr) {
+			delete _val;
+			_val = nullptr;
+		}
+		for (size_t i = 0; i < 8; i++) {
+			if (_children[i] != nullptr) {
+				delete _children[i];
+				_children[i] = nullptr;
+			}
+		}
+		/*
+		for (auto &o : _children) {
+			if (o != nullptr) {
+				delete o;
+				o = nullptr;
+			}
+		}*/
+	}
+
+	template <typename T>
 	bool Octree<T>::validCoordinate(const glm::uvec3& pos) const {
 		// unsigned int s = size();
 		// return pos.x < s && pos.y < s && pos.z < s;
@@ -251,19 +282,19 @@ namespace world {
 			assert(validCoordinate(pos)); // check bound
 
 			//Get the Position we want to set using morton code
-			unsigned int mortonMask = 1 << (_depth - 1);
-			glm::uvec3 mortonPos = pos / glm::uvec3(mortonMask); // keep only needed byte for this _depth
+			glm::uvec3 mortonMask = glm::uvec3(1 << (_depth - 1));
+			glm::uvec3 mortonPos = pos / mortonMask; // keep only needed byte for this _depth
 			unsigned int mortonId = mortonPos.x + (mortonPos.z << 1) + (mortonPos.y << 2);
 
 			// if the node with the right index alredy exist, then set the value recursively
 			if (_children[mortonId] != nullptr) {
-				return _children[mortonId]->setValue(pos - mortonPos * glm::uvec3(mortonMask), val);
+				return _children[mortonId]->setValue(pos - mortonPos * mortonMask, val);
 			}
 			else {
 				// create this subOctree and set the value recursively
 				Octree* newOctree = new Octree(this, mortonId);
 				_children[mortonId] = newOctree;
-				return newOctree->setValue(pos - mortonPos * glm::uvec3(mortonMask), val);
+				return newOctree->setValue(pos - mortonPos * mortonMask, val);
 			}
 		}
 		// this declaration cannot normally be reached due to recursion
@@ -280,13 +311,13 @@ namespace world {
 		assert(validCoordinate(pos)); // check bound
 
 		//Get the Position we want to set using morton code
-		unsigned mortonMask = 1 << (_depth - 1);
-		glm::uvec3 mortonPos = pos / glm::uvec3(mortonMask);
+		glm::uvec3 mortonMask = glm::uvec3(1 << (_depth - 1));
+		glm::uvec3 mortonPos = pos / mortonMask;
 		unsigned int mortonId = mortonPos.x + (mortonPos.z << 1) + (mortonPos.y << 2);
 
 		// if the node with the right index alredy exist,
 		if (_children[mortonId] != nullptr) {
-			return _children[mortonId]->getValue(pos - mortonPos * glm::uvec3(mortonMask));
+			return _children[mortonId]->getValue(pos - mortonPos * mortonMask);
 		}
 		else {
 			//If the right subOctree element doesn't exist return nullptr as default value
@@ -305,13 +336,14 @@ namespace world {
 		assert(validCoordinate(pos)); // check bound
 
 		//Get the Position we want to set using morton code
-		unsigned mortonMask = 1 << (_depth - 1);
-		glm::uvec3 mortonPos = pos / glm::uvec3(mortonMask);
+		glm::uvec3 mortonMask = glm::uvec3(1 << (_depth - 1));
+		glm::uvec3 mortonPos = pos / mortonMask; // keep only needed byte for this _depth
+
 		unsigned int mortonId = mortonPos.x + (mortonPos.z << 1) + (mortonPos.y << 2);
 
 		// if the node with the right index alredy exist,
 		if (_children[mortonId] != nullptr) {
-			return _children[mortonId]->getPtrValue(pos - mortonPos * glm::uvec3(mortonMask));
+			return _children[mortonId]->getPtrValue(pos - mortonPos * mortonMask);
 		}
 		else {
 			//If the right subOctree element doesn't exist return nullptr as default value
@@ -333,19 +365,19 @@ namespace world {
 			assert(validCoordinate(pos)); // check bound
 
 			//Get the Position we want to set using morton code
-			unsigned int mortonMask = 1 << (_depth - 1);
-			glm::uvec3 mortonPos = pos / glm::uvec3(mortonMask); // keep only needed byte for this _depth
+			glm::uvec3 mortonMask = glm::uvec3(1 << (_depth - 1));
+			glm::uvec3 mortonPos = pos / mortonMask; // keep only needed byte for this _depth
 			unsigned int mortonId = mortonPos.x + (mortonPos.z << 1) + (mortonPos.y << 2);
 
 			// if the node with the right index alredy exist, then set the value recursively
 			if (_children[mortonId] != nullptr) {
-				return _children[mortonId]->getOrCreateValue(pos - mortonPos * glm::uvec3(mortonMask));
+				return _children[mortonId]->getOrCreateValue(pos - mortonPos * mortonMask);
 			}
 			else {
 				// create this subOctree and set the value recursively
 				Octree* newOctree = new Octree(this, mortonId);
 				_children[mortonId] = newOctree;
-				return newOctree->getOrCreateValue(pos - mortonPos * glm::uvec3(mortonMask));
+				return newOctree->getOrCreateValue(pos - mortonPos * mortonMask);
 			}
 		}
 		// this declaration cannot normally be reached due to recursion
@@ -373,14 +405,14 @@ namespace world {
 			assert(validCoordinate(pos)); // check bound
 
 			//Get the Position we want to set using morton code
-			unsigned mortonMask = 1 << (_depth - 1);
-			glm::uvec3 mortonPos = pos / glm::uvec3(mortonMask); // keep only needed byte for this _depth
+			glm::uvec3 mortonMask = glm::uvec3(1 << (_depth - 1));
+			glm::uvec3 mortonPos = pos / mortonMask; // keep only needed byte for this _depth
 			unsigned int mortonId = mortonPos.x + (mortonPos.z << 1) + (mortonPos.y << 2);
 
 			// if the node with the right index alredy exist
 			if (_children[mortonId] != nullptr) {
 				// then delete the value recursively
-				return _children[mortonId]->delValue(pos - mortonPos * glm::uvec3(mortonMask));
+				return _children[mortonId]->delValue(pos - mortonPos * mortonMask);
 			}
 			else {
 				return false; // return false because we are already empty

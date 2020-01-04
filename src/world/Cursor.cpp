@@ -4,7 +4,7 @@
 
 using namespace world;
 
-Cursor::Cursor(const glm::vec3 &color) : _position(0,0,0), _color(color), _camReferenceForMove(nullptr) {
+Cursor::Cursor(const unsigned int &minLimit, const unsigned int &maxLimit, const glm::vec3 &color) : _position(0,0,0), _color(color), _camReferenceForMove(nullptr), _minLimit(minLimit), _maxLimit(maxLimit) {
 
     //    v5----- v4
     //   /|      /|
@@ -44,7 +44,8 @@ Cursor::Cursor(const glm::vec3 &color) : _position(0,0,0), _color(color), _camRe
 	openGL::VertexBuffer::setVertexAttrib(vertexAttrib_Pos, 3, GL_FLOAT, sizeof(glm::vec3), 0);
 	_VBO.unbind();
 
-    _VAO.unbind(); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
+    _VAO.unbind();
+    std::cout << maxLimit << " " << int(maxLimit) << std::endl; 
 }
 
 void Cursor::draw(const Camera &cam, openGL::Shader &shader) {
@@ -127,6 +128,9 @@ void Cursor::handleEvent(SDL_Event sdlEvent) {
                     (camDir.x > 0) ? _position.x-- : _position.x++;
                 }
             }
+
+            // limit to the lower bound
+            _position = glm::clamp( _position, _minLimit, _maxLimit);
         }
     }
 }

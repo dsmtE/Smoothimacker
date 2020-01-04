@@ -14,7 +14,7 @@
 // #include "../imath/util.hpp"
 
 namespace world {
-
+	
 	class Chunk {
 
 	private:
@@ -65,6 +65,8 @@ namespace world {
         inline void setPosition(const glm::uvec3& pos) { _position = pos; }
 
 		inline void updateAllFaceMask() { _cubes.updateAllFaceMask(); };
+
+		inline void reset() { _cubes.reset(); }; 
 
         //---------- Compatibility fonctions ----------//
 		/*

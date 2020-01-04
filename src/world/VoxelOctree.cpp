@@ -73,39 +73,41 @@ glm::vec3 VoxelOctree::getColor(const glm::uvec3 &pos) {
     return getValue(pos).color;
 }
 
-bool VoxelOctree::delAt(const glm::uvec3 &pos) {   
+bool VoxelOctree::delAt(const glm::uvec3 &pos, const bool updateFaceMask) {   
     if( delValue(pos) ) {
         std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(pos);
 
-        for(auto adjC : adjCubes) { // for each adjacents Cubes
-            switch (adjC.first) {
-                case Up:
-                    (adjC.second)->faceMask |=0x02;
-                    break;
+        if (updateFaceMask) {
+            for(auto adjC : adjCubes) { // for each adjacents Cubes
+                switch (adjC.first) {
+                    case Up:
+                        (adjC.second)->faceMask |=0x02;
+                        break;
 
-                case Down:
-                    (adjC.second)->faceMask |=0x01;
-                    break;
+                    case Down:
+                        (adjC.second)->faceMask |=0x01;
+                        break;
 
-                case Left:
-                    (adjC.second)->faceMask |=0x08;
-                    break;
+                    case Left:
+                        (adjC.second)->faceMask |=0x08;
+                        break;
 
-                case Right:
-                    (adjC.second)->faceMask |=0x04;
-                    break;
+                    case Right:
+                        (adjC.second)->faceMask |=0x04;
+                        break;
 
-                case Front:
-                    (adjC.second)->faceMask |=0x20;
-                    break;
+                    case Front:
+                        (adjC.second)->faceMask |=0x20;
+                        break;
 
-                case Back:
-                    (adjC.second)->faceMask |=0x10;
-                    break;
+                    case Back:
+                        (adjC.second)->faceMask |=0x10;
+                        break;
 
-                default:
-                    std::cerr << "error: unknown direction" << std::endl;
-                    break;
+                    default:
+                        std::cerr << "error: unknown direction" << std::endl;
+                        break;
+                }
             }
         }
         return true;

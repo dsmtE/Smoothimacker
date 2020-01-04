@@ -6,6 +6,7 @@
 
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/color_space.hpp>
+#include <glm/glm.hpp>
 
 #include <iostream>
 
@@ -17,8 +18,13 @@ App::App(int width, int height, const char* title) :
 	_cam(width, height, glm::vec3(0, 0, 5.f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
-	_chunk(5),
-	_settings(_cursor.getPointerPos(), _cam.getCameraSpeedPtr(), &_window),
+	_controlPtsShader("assets/shaders/controlPts.vert", "assets/shaders/controlPts.frag"),
+	_gridShader("assets/shaders/grid.vert", "assets/shaders/grid.frag"),
+	_chunk(6),
+	_controlPts(),
+	_cursor(0, _chunk.size()),
+	_grid(_chunk.size()),
+	_settings(_cursor.getPointerPos(), _cam.getCameraSpeedPtr(), &_chunk, &_window, &_controlPts),
 	_menu(&_chunk, &_settings) {
 
 	SDL_SetRelativeMouseMode(SDL_FALSE);
@@ -29,9 +35,9 @@ App::App(int width, int height, const char* title) :
 	//fill chunk
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
-			for (unsigned int k = 0; k < _chunk.size(); k++) {
-				_chunk.setColor(glm::uvec3(i, k, j), glm::rgbColor( glm::vec3(float(k+1)/float(_chunk.size()) * 360.0f, 0.6f, 1.0f)));
-			} 
+			//for (unsigned int k = 0; k < _chunk.size(); k++) {
+				_chunk.setColor(glm::uvec3(i, 0, j), glm::rgbColor( glm::vec3(float(i+1)/float(_chunk.size()) * 360.0f, 0.6f, 1.0f)));
+			//}
 		}
 	}
 
@@ -56,7 +62,7 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 	_cursor.handleEvent(sdlEvent);
 	_menu.handleEvent(sdlEvent);
 
-	_cam.handleRotationEvents(sdlEvent, _settings.relativeMouse());
+	_cam.handleRotationEvents(sdlEvent, _settings._relativeMouse);
 	
 	// application event
 	switch (sdlEvent.type) {
@@ -72,12 +78,12 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_r) {
-				if (_settings.relativeMouse()) {
-					_settings.relativeMouse() = SDL_FALSE;
+				if (_settings._relativeMouse) {
+					_settings._relativeMouse = SDL_FALSE;
 				}else {
-					_settings.relativeMouse() = SDL_TRUE;
+					_settings._relativeMouse = SDL_TRUE;
 				}
-				SDL_SetRelativeMouseMode(_settings.relativeMouse());
+				SDL_SetRelativeMouseMode(_settings._relativeMouse);
 			}
 			else {
 				//printf("Keycode: %s (%d) Scancode: %s (%d) \n",
@@ -98,9 +104,11 @@ void App::loop() {
 		beginFrame();
 		_menu.drawMenu();
 		_chunk.draw(_cam, _chunkShader);
+		_grid.draw(_cam, _gridShader);
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
 		_cursor.draw(_cam, _cursorShader);
+		_controlPts.draw(_cam, _controlPtsShader);
 
 		endFrame();
 	}

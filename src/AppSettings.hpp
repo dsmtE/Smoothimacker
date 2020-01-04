@@ -3,31 +3,32 @@
 #include <glm/glm.hpp>
 #include <SDL.h>
 #include "openGL/SDLWinWrapper.hpp"
+#include "world/Chunk.hpp"
+#include "world/ControlPts.hpp"
+
 class AppSettings {
-private:
+
+
+public:
 
 	glm::ivec3 *_cursorPos;
 	float* _cameraSpeed;
 	openGL::SDLWinWrapper* _winPtr;
+	world::Chunk *_chunkPtr;
+	world::ControlPts *_controlPts;
 
 	// others setting attributs
 	bool _rayCastingEnable;
 	SDL_bool _relativeMouse; // handle mouse rotation with mouse
+	int _nbRandomControlPts; // nb control pt to be generated
 
-public:
 
 	//static attributs
 	const static float camMinSpeed;
 	const static float camMaxSpeed;
 
-	AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, openGL::SDLWinWrapper* winPtr);
+	AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts);
 	~AppSettings() = default;
-
-	// getters expose app setting 
-	inline glm::ivec3* cursorPos() { return _cursorPos; };
-	inline float* CameraSpeed() { return _cameraSpeed; };
-	inline bool& rayCasting() { return _rayCastingEnable; };
-	inline SDL_bool& relativeMouse() { return _relativeMouse; };
 
 	glm::ivec2 windowSize() const;
 	inline void exit() { _winPtr->exit(); };

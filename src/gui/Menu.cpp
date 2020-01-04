@@ -5,6 +5,10 @@
 #include <imgui/imgui_impl_sdl.h>
 
 #include <iostream>
+#include <algorithm> // for clamp
+#include <functional>   // for bind
+#include "../imath/util.hpp"
+#include "../imath/RadialBasisFunction.hpp"
 
 #include "../world/Cursor.hpp"
 
@@ -54,16 +58,22 @@ void Menu::drawTools() {
 
 	ImGui::Spacing();
 	// infos
-
+	ImGui::Text("informations");
 	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 }
 
 void Menu::editCursorPos() {
 	ImGui::Text("Cursor position");
-	ImGui::InputInt("X", &(_settings->cursorPos()->x));
-	ImGui::InputInt("Y", &(_settings->cursorPos()->y));
-	ImGui::InputInt("Z", &(_settings->cursorPos()->z));
+	if ( ImGui::InputInt("X", &(_settings->_cursorPos->x))  ) {
+		_settings->_cursorPos->x = std::clamp( _settings->_cursorPos->x, 0, int(_settings->_chunkPtr->size()) );
+	}
+	if ( ImGui::InputInt("Y", &(_settings->_cursorPos->y))  ) {
+		_settings->_cursorPos->y = std::clamp( _settings->_cursorPos->y, 0, int(_settings->_chunkPtr->size()) );
+	}
+	if ( ImGui::InputInt("Z", &(_settings->_cursorPos->z))  ) {
+		_settings->_cursorPos->z = std::clamp( _settings->_cursorPos->z, 0, int(_settings->_chunkPtr->size()) );
+	}
 	ImGui::Spacing();
 }
 
@@ -89,12 +99,12 @@ void Menu::drawMenuBar() {
 
 		if (ImGui::BeginMenu("Options")) {
 
-			if (ImGui::Checkbox("enable rayCasting", &_settings->rayCasting()))
+			ImGui::Checkbox("enable rayCasting", &(_settings->_rayCastingEnable));
 
-				ImGui::Spacing();
+			ImGui::Spacing();
 
 			ImGui::Text("camera speed");
-			ImGui::SliderFloat("camSpeed", _settings->CameraSpeed(), AppSettings::camMinSpeed, AppSettings::camMaxSpeed);
+			ImGui::SliderFloat("camSpeed", _settings->_cameraSpeed, AppSettings::camMinSpeed, AppSettings::camMaxSpeed);
 
 			ImGui::EndMenu();
 		}
@@ -115,8 +125,28 @@ void Menu::drawMenu() {
 	Menu::drawTools();
 	Menu::editCursorPos();
 
-	if (ImGui::Button("Generate map"))
-		std::cout << "generate map" << std::endl;
+	if (ImGui::Button("Generate map")) {
+		// std::cout << "generate map" << std::endl;
+		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, 0.03, 0.03)));
+	}
+	ImGui::Spacing();
+
+	if (ImGui::Button("random control pts")) {
+		_settings->_controlPts->resetControlPts();
+		for (size_t i = 0; i < _settings->_nbRandomControlPts; i++){
+			_settings->_controlPts->addControlPts(imath::genVec3(_settings->_chunkPtr->size()));
+		}
+	}
+	ImGui::Text("number of control pts:");
+	ImGui::InputInt("", &(_settings->_nbRandomControlPts));
+	assert(_settings->_nbRandomControlPts >= 0);
+	ImGui::Spacing();
+
+	if (ImGui::Button("cursor add control pt")) {
+		_settings->_controlPts->addControlPts(*(_settings->_cursorPos));
+		_settings->_nbRandomControlPts++;
+	}
+
 	ImGui::Spacing();
 
 	if (ImGui::Button("Import image"))
@@ -127,11 +157,11 @@ void Menu::drawMenu() {
 
 // action callBack functions
 void Menu::createAction() {
-	_chunkPtr->setColor(*(_settings->cursorPos()), glm::vec3(1, 1, 0.9));
+	_chunkPtr->setColor(*(_settings->_cursorPos), glm::vec3(1, 1, 0.9));
 }
 
 void Menu::deleteAction() {
-	_chunkPtr->delAt(*(_settings->cursorPos()));
+	_chunkPtr->delAt(*(_settings->_cursorPos));
 }
 
 void Menu::digAction() {
