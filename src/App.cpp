@@ -35,9 +35,9 @@ App::App(int width, int height, const char* title) :
 	//fill chunk
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
-			//for (unsigned int k = 0; k < _chunk.size(); k++) {
-				_chunk.setColor(glm::uvec3(i, 0, j), glm::rgbColor( glm::vec3(float(i+1)/float(_chunk.size()) * 360.0f, 0.6f, 1.0f)));
-			//}
+			for (unsigned int k = 0; k < 3; k++) {
+				_chunk.setColor(glm::uvec3(i, k, j), glm::rgbColor( glm::vec3(float(k+1)/float(3) * 360.0f, 0.6f, 1.0f)));
+			}
 		}
 	}
 
@@ -103,8 +103,9 @@ void App::loop() {
 	while (isRunning()) {
 		beginFrame();
 		_menu.drawMenu();
-		_chunk.draw(_cam, _chunkShader);
 		_grid.draw(_cam, _gridShader);
+		_chunk.draw(_cam, _chunkShader, _settings); 
+
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
 		_cursor.draw(_cam, _cursorShader);

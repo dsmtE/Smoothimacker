@@ -11,6 +11,7 @@
 
 #include "Camera.hpp"
 #include "VoxelOctree.hpp"
+#include "../AppSettings.hpp" // used to draw for light parammeter
 // #include "../imath/util.hpp"
 
 namespace world {
@@ -45,7 +46,7 @@ namespace world {
 
         //---------- Methods ----------//
 
-		void draw(const Camera &c, openGL::Shader &s);
+		void draw(const Camera &c, openGL::Shader &s, AppSettings &settings);
 
         // cubes setters and getters
 

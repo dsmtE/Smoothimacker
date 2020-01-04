@@ -11,16 +11,10 @@ out VS_OUT {
     flat uint faceMask;
 } vs_out;
 
-// uniform  
-
-vec3 indexToCoord(uint index, uint size) {
-    float id = float(index);
-    return vec3(mod(id, size), floor(id / (size * size)), mod(floor(id / size), size)); 
-}
-
 void main() {
     gl_Position = vec4(pos, 1);
     vs_out.faceMask = faceMask;
     vs_out.color = color;
+
 }
 

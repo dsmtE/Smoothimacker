@@ -14,7 +14,9 @@ AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk
 	_rayCastingEnable(false),
 	_relativeMouse(SDL_FALSE),
 	_nbRandomControlPts(4), 
-	_controlPts(controlPts) {
+	_controlPts(controlPts),
+	_sunDir(1.0f, -1.0f, 1.0f),
+	_sunColor(1.0f, 1.0f, 1.0f) {
 }
 
 glm::ivec2 AppSettings::windowSize() const {

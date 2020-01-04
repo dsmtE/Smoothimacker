@@ -22,6 +22,10 @@ public:
 	SDL_bool _relativeMouse; // handle mouse rotation with mouse
 	int _nbRandomControlPts; // nb control pt to be generated
 
+	// light settings
+	glm::vec3 _sunDir;
+	glm::vec3 _sunColor;
+
 
 	//static attributs
 	const static float camMinSpeed;

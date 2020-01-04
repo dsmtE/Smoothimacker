@@ -44,7 +44,7 @@ void Chunk::setVBOdata() {
 // 	return pos;
 // }
 
-void Chunk::draw(const world::Camera &c,  openGL::Shader &s) {
+void Chunk::draw(const world::Camera &c,  openGL::Shader &s, AppSettings &settings) {
 	if (needUpdateVBO) {
 		setVBOdata(); // update data in VBO
 		needUpdateVBO = false;
@@ -53,11 +53,14 @@ void Chunk::draw(const world::Camera &c,  openGL::Shader &s) {
 	if (_cubes.vector().size() > 0) {
 		s.bind();
 
-		// s.setInt("chunkSize", size());
-		const glm::mat4 MVMatrix = c.viewMatrix() * getModelMatrix();
-		s.setMat4("MVPMatrix", c.projectionMatrix() * MVMatrix);
-        // TODO add support of normal matrix for light
-		// s.setMat3("NormalMatrix", glm::inverseTranspose(glm::mat3(MVMatrix)));
+		const glm::mat4 modelMatrix = getModelMatrix();
+		const glm::mat4 viewMatrix = c.viewMatrix();
+		s.setMat4("MVPMatrix", c.projectionMatrix() *  viewMatrix * modelMatrix);
+		s.setMat3("NormalMatrix", glm::inverseTranspose(glm::mat3(modelMatrix)));
+		s.setMat4("ModelMatrix", modelMatrix);
+		s.setVec3f("sunColor", settings.sunColor());
+		s.setVec3f("sunDir", settings.sunDir());
+
 
 		_VAO.bind();
 		glDrawArrays(GL_POINTS, 0, _cubes.vector().size());
