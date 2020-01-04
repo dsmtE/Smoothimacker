@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../world/Chunk.hpp"
+#include <Eigen/Dense>
 
 //unsing namestapce insted of class
 namespace imath::rbf {
@@ -12,10 +13,10 @@ namespace imath::rbf {
     //distance functions
     float dist(const Eigen::Vector2f &p1, const Eigen::Vector2f &p2);
 
-    Eigen::VectorXf computeOmega(const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values , float radialFunction(float, float));
+    Eigen::VectorXf computeOmega(const std::vector<Eigen::Vector2f> &controlePts, const Eigen::VectorXf &controlePtsValues , float radialFunction(float, float));
 
     // change the name to make it more meaningful
-    Eigen::VectorXf interpolate(const std::vector<Eigen::Vector2f> &evaluation_pts, const std::vector<Eigen::Vector2f> &controle_pts, const Eigen::VectorXf &controle_pts_Values, float radialFunction(float, float));
+    Eigen::VectorXf interpolate(const std::vector<Eigen::Vector2f> &evaluationPts, const std::vector<glm::vec3> &glmControlsPts, float radialFunction(float, float));
 
-    void generateTerrain(world::Chunk &c, float rf(float, float)); // TODO
+    void generateTerrain(world::Chunk &c, const std::vector<glm::vec3> &glmControlsPts, float rf(float, float)); // TODO
 }

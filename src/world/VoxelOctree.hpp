@@ -45,10 +45,11 @@ namespace world {
 		/// catch(string const& str) {cerr << str << endl; }
 		glm::vec3 getColor(const glm::uvec3 &pos);
 		/// del value in our data array and octree coresponding id
-		bool delAt(const glm::uvec3 &pos);
+		bool delAt(const glm::uvec3 &pos, const bool updateFaceMask = true);
 		bool setColor(const glm::uvec3 &pos, const glm::vec3 &color,  const bool updateFaceMask = true);
 		// delete replaced method
 		CubeVertex*& setValue(const glm::uvec3& pos, const CubeVertex& val) = delete;
+
 	};
 
 }// namespace world end

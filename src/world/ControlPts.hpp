@@ -42,5 +42,7 @@ namespace world {
         void resetControlPts();
         void delLastControlPt();
 
+        inline std::vector<glm::vec3> getPts() { return _controlCubesPos; };
+
     };
 }

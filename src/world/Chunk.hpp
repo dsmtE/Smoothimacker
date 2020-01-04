@@ -66,6 +66,8 @@ namespace world {
 
 		inline void updateAllFaceMask() { _cubes.updateAllFaceMask(); };
 
+		inline void reset() { _cubes.reset(); }; 
+
         //---------- Compatibility fonctions ----------//
 		/*
         inline uint16_t coordToIndex(const unsigned int &x, const unsigned int &y, const unsigned int &z) const {coordToIndex(glm::uvec3(x, y, z));}

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <algorithm> // for clamp
 #include "../imath/util.hpp"
+#include "../imath/RadialBasisFunction.hpp"
 
 #include "../world/Cursor.hpp"
 
@@ -56,7 +57,7 @@ void Menu::drawTools() {
 
 	ImGui::Spacing();
 	// infos
-
+	ImGui::Text("informations");
 	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 }
@@ -123,9 +124,10 @@ void Menu::drawMenu() {
 	Menu::drawTools();
 	Menu::editCursorPos();
 
-	if (ImGui::Button("Generate map"))
-		std::cout << "generate map" << std::endl;
-		//TODO
+	if (ImGui::Button("Generate map")) {
+		// std::cout << "generate map" << std::endl;
+		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), imath::rbf::gaussian);
+	}
 	ImGui::Spacing();
 
 	if (ImGui::Button("random control pts")) {
