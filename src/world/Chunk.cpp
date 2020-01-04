@@ -44,7 +44,7 @@ void Chunk::setVBOdata() {
 // 	return pos;
 // }
 
-void Chunk::draw(const world::Camera &c,  openGL::Shader &s, AppSettings &settings) {
+void Chunk::draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor) {
 	if (needUpdateVBO) {
 		setVBOdata(); // update data in VBO
 		needUpdateVBO = false;
@@ -58,9 +58,8 @@ void Chunk::draw(const world::Camera &c,  openGL::Shader &s, AppSettings &settin
 		s.setMat4("MVPMatrix", c.projectionMatrix() *  viewMatrix * modelMatrix);
 		s.setMat3("NormalMatrix", glm::inverseTranspose(glm::mat3(modelMatrix)));
 		s.setMat4("ModelMatrix", modelMatrix);
-		s.setVec3f("sunColor", settings.sunColor());
-		s.setVec3f("sunDir", settings.sunDir());
-
+		s.setVec3f("sunColor", sunColor);
+		s.setVec3f("sunDir", sunDir);
 
 		_VAO.bind();
 		glDrawArrays(GL_POINTS, 0, _cubes.vector().size());

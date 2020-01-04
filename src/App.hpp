@@ -11,6 +11,7 @@
 #include "gui/Menu.hpp"
 #include <SDL.h>
 
+
 #include "AppSettings.hpp"
 
 class App : public IApp {

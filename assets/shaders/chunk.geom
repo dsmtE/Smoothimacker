@@ -21,7 +21,6 @@ out GS_OUT {
 uniform mat3 NormalMatrix;
 uniform mat4 MVPMatrix;
 uniform mat4 ModelMatrix;
-// uniform mat4 ViewMatrix;
 
 //    v5----- v4
 //   /|      /|

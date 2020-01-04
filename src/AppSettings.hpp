@@ -3,17 +3,16 @@
 #include <glm/glm.hpp>
 #include <SDL.h>
 #include "openGL/SDLWinWrapper.hpp"
-#include "world/Chunk.hpp"
 #include "world/ControlPts.hpp"
+#include "world/Chunk.hpp"
 
 class AppSettings {
-
 
 public:
 
 	glm::ivec3 *_cursorPos;
 	float* _cameraSpeed;
-	openGL::SDLWinWrapper* _winPtr;
+	openGL::SDLWinWrapper *_winPtr;
 	world::Chunk *_chunkPtr;
 	world::ControlPts *_controlPts;
 
@@ -25,7 +24,6 @@ public:
 	// light settings
 	glm::vec3 _sunDir;
 	glm::vec3 _sunColor;
-
 
 	//static attributs
 	const static float camMinSpeed;

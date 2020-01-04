@@ -104,8 +104,7 @@ void App::loop() {
 		beginFrame();
 		_menu.drawMenu();
 		_grid.draw(_cam, _gridShader);
-		_chunk.draw(_cam, _chunkShader, _settings); 
-
+		_chunk.draw(_cam, _chunkShader, _settings._sunDir, _settings._sunColor); 
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
 		_cursor.draw(_cam, _cursorShader);
