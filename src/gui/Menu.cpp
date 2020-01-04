@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <algorithm> // for clamp
+#include <functional>   // for bind
 #include "../imath/util.hpp"
 #include "../imath/RadialBasisFunction.hpp"
 
@@ -126,7 +127,7 @@ void Menu::drawMenu() {
 
 	if (ImGui::Button("Generate map")) {
 		// std::cout << "generate map" << std::endl;
-		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), imath::rbf::gaussian);
+		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, 0.03, 0.03)));
 	}
 	ImGui::Spacing();
 
