@@ -282,8 +282,6 @@ void Menu::drawMenu() {
 	ImGui::Begin("Editor settings", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove); // | ImGuiWindowFlags_AlwaysAutoResize
 	ImGui::SetWindowPos(ImVec2(_settings->windowSize().x - ImGui::GetWindowWidth(), 18.0f));
 	ImGui::SetWindowSize(ImVec2(270, _settings->windowSize().y));
-	
-	ImGui::ShowDemoWindow();
 
 	Menu::colorPicker();
 	Menu::drawTools();
@@ -332,6 +330,7 @@ void Menu::extrudeAction() {
 		while (_chunkPtr->getColorPtr(tempPos) != nullptr && tempPos.y < _chunkPtr->size()-1) { // loop until we find the top of our column
 			tempPos += glm::ivec3(0,1,0);
 		}
+
 		_chunkPtr->setColor(tempPos, _chunkPtr->getColor(tempPos - glm::ivec3(0,1,0))); // create on top
 	} else {
 		std::cout << "there is no cube here." << std::endl;
