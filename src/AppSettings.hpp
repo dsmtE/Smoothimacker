@@ -25,6 +25,9 @@ public:
 	glm::vec3 _sunDir;
 	glm::vec3 _sunColor;
 
+	//color setting
+	glm::vec3 _colorPick;
+
 	//static attributs
 	const static float camMinSpeed;
 	const static float camMaxSpeed;

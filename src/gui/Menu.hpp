@@ -29,6 +29,9 @@ namespace gui {
 
 		void drawTools();
 		void editCursorPos();
+		void colorPicker();
+		void lightsSettings();
+		void randomGeneration();
 		void drawMenu();
 		void drawMenuBar();
 

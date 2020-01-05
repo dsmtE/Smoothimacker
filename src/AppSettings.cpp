@@ -16,7 +16,8 @@ AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk
 	_nbRandomControlPts(1),
 	_controlPts(controlPts),
 	_sunDir(1.0f, -1.0f, 1.0f),
-	_sunColor(1.0f, 1.0f, 1.0f) {
+	_sunColor(1.0f, 1.0f, 1.0f),
+	_colorPick(1.0f, 1.0f, 1.0f) {
 		
 	}
 
