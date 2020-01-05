@@ -51,42 +51,46 @@ void Menu::colorPicker() {
 void Menu::drawTools() {
 	ImGui::Text("Cubes tools");
 	ImGui::Spacing(); ImGui::Spacing();
-	if (ImGui::Button(ICON_FA_CUBE)) {
+	
+	ImGui::Columns(2, NULL, false);
+	static int selected = -1;
+
+	if (ImGui::Selectable(ICON_FA_CUBE " Create", selected == 0)) {
+		selected = 0;
 		std::cout << "assign CREATE strategy" << std::endl;
 		// or using lambda function with [this]() {createAction(); };
 		_tool.setAction(std::bind(&Menu::createAction, this));
 	}
-	ImGui::SameLine();
-	ImGui::Text("Create  ");
-	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_ERASER)) {
+	
+	
+	
+	if (ImGui::Selectable(ICON_FA_ERASER " Delete", selected == 1)) {
+		selected = 1;
 		std::cout << "assign DELETE strategy" << std::endl;
 		_tool.setAction(std::bind(&Menu::deleteAction, this));
 	}
-	ImGui::SameLine();
-	ImGui::Text("Delete");
-	ImGui::Spacing();
+	
+	ImGui::NextColumn();
 
-	if (ImGui::Button(ICON_FA_CUBES)) {
+	if (ImGui::Selectable(ICON_FA_CUBES, " Extrude", selected == 2)) {
+		selected = 2;
 		std::cout << "assign EXTRUDE strategy" << std::endl;
 		_tool.setAction(std::bind(&Menu::extrudeAction, this));
 	}
-	ImGui::SameLine();
-	ImGui::Text("Extrude ");
-	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_KIWI_BIRD)) {
+
+	if (ImGui::Selectable(ICON_FA_KIWI_BIRD " Dig", selected == 3)) {
+		selected = 3;
 		std::cout << "assign DIG strategy" << std::endl;
 		_tool.setAction(std::bind(&Menu::digAction, this));
 	}
-	ImGui::SameLine();
-	ImGui::Text("Dig");
 
-	ImGui::Spacing();
-	if (ImGui::Button(ICON_FA_PAINT_BRUSH)) {
-		
+	ImGui::NextColumn();
+	
+	if (ImGui::Selectable(ICON_FA_PAINT_BRUSH " Paint", selected == 4)) {
+		selected = 4;
+		//TODO
 	}
-	ImGui::SameLine();
-	ImGui::Text("Paint");
+	ImGui::Columns(1);
 	ImGui::Separator();
 	
 }
