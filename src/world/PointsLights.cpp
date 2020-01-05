@@ -66,6 +66,12 @@ void PointsLights::draw(const Camera &cam, openGL::Shader &shader) {
     shader.bind();
     shader.setMat4("MVPMatrix", cam.PVMatrix());
 
+    // set struct value using uniform
+    for (GLuint i = 0; i < _lights.size(); i++) {
+        std::string iStr = std::to_string(i);
+        shader.setVec3f("pointsLightsAmbiantColor[" + iStr + "].ambientColor", _lights[i].ambientColor);
+    }
+
     _VAO.bind();
     glDrawElementsInstanced(GL_TRIANGLES, _displayCubeIndices.size() * 3, GL_UNSIGNED_INT , 0, _lights.size());
     _VAO.unbind();
