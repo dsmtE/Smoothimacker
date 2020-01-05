@@ -22,8 +22,6 @@ namespace world {
 //     (Z) ( ROLL ) 
 
 	// Default camera values
-	const float YAW = -90.0f;
-	const float PITCH = 0.0f;
 	const float SPEED = 25.0f;
 	const float SENSITIVITY = 0.5f;
 	const float ZOOM = 45.0f;
@@ -57,10 +55,11 @@ namespace world {
 
 	public:
 		// Constructor with vectors
-		Camera(const int &screenWidth, const int &screenHeigh, const glm::vec3 &position = glm::vec3(0.0f, 0.0f, 0.0f), 
+		Camera(const int &screenWidth, const int &screenHeigh, 
+				const glm::vec3 &position = glm::vec3(0.0f, 0.0f, 0.0f), 
 				const glm::vec3 &worldUp = glm::vec3(0.0f, 1.0f, 0.0f), 
-				const float &yaw = YAW, 
-				const float &pitch = PITCH);
+				const float &yaw =  45.0f, 
+				const float &pitch = -10.0f);
 
 		glm::mat4 viewMatrix() const;
 		// glm::mat4 projectionMatrix(const int& screenWidth, const int& screenHeigh) const;

@@ -13,9 +13,9 @@
 #include <chrono>
 
 
-App::App(int width, int height, const char* title) : 
+App::App(int width, int height, const char* title) :
 	IApp(width, height, title),
-	_cam(width, height, glm::vec3(0, 0, 5.f)),
+	_cam(width, height, glm::vec3(0.0f, 10.0f, 0.0f)),
 	_cursorShader("assets/shaders/cursor.vert", "assets/shaders/cursor.frag"),
 	_chunkShader("assets/shaders/chunk.vert", "assets/shaders/chunk.frag", "assets/shaders/chunk.geom"),
 	_controlPtsShader("assets/shaders/controlPts.vert", "assets/shaders/controlPts.frag"),
@@ -29,6 +29,7 @@ App::App(int width, int height, const char* title) :
 
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
+
 
 	auto t1 = std::chrono::high_resolution_clock::now();
 
