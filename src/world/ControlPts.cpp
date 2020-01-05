@@ -1,4 +1,5 @@
 #include "ControlPts.hpp"
+#include <algorithm> // for std::remove_if
 
 using namespace world;
 
@@ -62,13 +63,21 @@ void ControlPts::addControlPts(const glm::vec3 &p) {
     _controlCubesPos.push_back(p);
     _instanceVBO.setData<glm::vec3>(_controlCubesPos, GL_STATIC_DRAW);
 }
+bool ControlPts::delControlPts(const glm::vec3 &p) {
+    const size_t tempSize = _controlCubesPos.size();
+    _controlCubesPos.erase(std::remove_if( _controlCubesPos.begin(), _controlCubesPos.end(),
+    [p](const glm::vec3 &pos) { 
+        return pos == p; 
+    }), _controlCubesPos.end());
+    if(tempSize != _controlCubesPos.size()) {
+        _instanceVBO.setData<glm::vec3>(_controlCubesPos, GL_STATIC_DRAW);
+        return true;
+    }
+    return false;
+    
+}
 
 void ControlPts::resetControlPts() {
     _controlCubesPos.clear();
-    _instanceVBO.setData<glm::vec3>(_controlCubesPos, GL_STATIC_DRAW);
-}
-
-void ControlPts::delLastControlPt() {
-    _controlCubesPos.pop_back();
     _instanceVBO.setData<glm::vec3>(_controlCubesPos, GL_STATIC_DRAW);
 }

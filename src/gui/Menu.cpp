@@ -44,7 +44,7 @@ void Menu::drawTools() {
 		std::cout << "assign DIG strategy" << std::endl;
 		_tool.setAction(std::bind(&Menu::digAction, this));
 	}
-	
+
 	ImGui::Spacing();
 
 	if (ImGui::Button("Paint")) {
@@ -55,12 +55,6 @@ void Menu::drawTools() {
 	static int item_current = 0;
 	ImGui::SameLine();
 	ImGui::Combo("Color", &item_current, items, IM_ARRAYSIZE(items));
-
-	ImGui::Spacing();
-	// infos
-	ImGui::Text("informations");
-	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
 }
 
 void Menu::editCursorPos() {
@@ -74,7 +68,6 @@ void Menu::editCursorPos() {
 	if ( ImGui::InputInt("Z", &(_settings->_cursorPos->z))  ) {
 		_settings->_cursorPos->z = std::clamp( _settings->_cursorPos->z, 0, int(_settings->_chunkPtr->size()) );
 	}
-	ImGui::Spacing();
 }
 
 void Menu::drawMenuBar() {
@@ -125,11 +118,11 @@ void Menu::drawMenu() {
 	Menu::drawTools();
 	Menu::editCursorPos();
 
+	ImGui::Spacing();
+
 	if (ImGui::Button("Generate map")) {
-		// std::cout << "generate map" << std::endl;
 		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, 0.03, 0.03)));
 	}
-	ImGui::Spacing();
 
 	if (ImGui::Button("random control pts")) {
 		_settings->_controlPts->resetControlPts();
@@ -137,21 +130,37 @@ void Menu::drawMenu() {
 			_settings->_controlPts->addControlPts(imath::genVec3(_settings->_chunkPtr->size()));
 		}
 	}
-	ImGui::Text("number of control pts:");
-	ImGui::InputInt("", &(_settings->_nbRandomControlPts));
+	ImGui::InputInt("number of control pts:", &(_settings->_nbRandomControlPts));
 	assert(_settings->_nbRandomControlPts >= 0);
-	ImGui::Spacing();
-
-	if (ImGui::Button("cursor add control pt")) {
+	if (ImGui::Button("Add control pt")) {
 		_settings->_controlPts->addControlPts(*(_settings->_cursorPos));
 		_settings->_nbRandomControlPts++;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Del control pt")) {
+		if(_settings->_controlPts->delControlPts(*(_settings->_cursorPos))) {
+			_settings->_nbRandomControlPts--;
+		}
 	}
 
 	ImGui::Spacing();
 
-	if (ImGui::Button("Import image"))
-		std::cout << "Import image" << std::endl;
+	if (ImGui::Button("add pt light")) {
+		_settings->_pointLights->addPointLight(*(_settings->_cursorPos),  1.0f, 0.09f, 0.032f, glm::vec3(0.8f, 0.2f, 0.2f) * 0.1f, glm::vec3(0.8f, 0.2f, 0.2f));
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Del pt light")) {
+		_settings->_pointLights->delPointLight(*(_settings->_cursorPos));
+	}
+
+	ImGui::Spacing();
 	
+	// infos
+	ImGui::Text("informations");
+	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+	ImGui::Spacing();
+
 	ImGui::End();
 }
 

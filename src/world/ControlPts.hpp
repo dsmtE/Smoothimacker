@@ -39,8 +39,8 @@ namespace world {
         void draw(const Camera &cam, openGL::Shader &shader);
 
         void addControlPts(const glm::vec3 &p);
+        bool delControlPts(const glm::vec3 &p);
         void resetControlPts();
-        void delLastControlPt();
 
         inline std::vector<glm::vec3> getPts() { return _controlCubesPos; };
 

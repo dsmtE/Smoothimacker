@@ -17,9 +17,9 @@ out GS_OUT {
     vec3 normal;
 } gs_out;
  
-// uniform  
-uniform mat3 NormalMatrix;
+// uniform
 uniform mat4 MVPMatrix;
+uniform mat3 NormalMatrix;
 uniform mat4 ModelMatrix;
 
 //    v5----- v4

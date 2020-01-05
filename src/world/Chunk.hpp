@@ -11,6 +11,7 @@
 
 #include "Camera.hpp"
 #include "VoxelOctree.hpp"
+#include "PointsLights.hpp"
 
 namespace world {
 	
@@ -44,7 +45,7 @@ namespace world {
 
         //---------- Methods ----------//
 
-		void draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor);
+		void draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor, const std::vector<world::PointLight> &lights);
 
         // cubes setters and getters
 

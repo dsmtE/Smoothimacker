@@ -5,6 +5,7 @@
 #include "openGL/SDLWinWrapper.hpp"
 #include "world/ControlPts.hpp"
 #include "world/Chunk.hpp"
+#include "world/PointsLights.hpp"
 
 class AppSettings {
 
@@ -15,6 +16,7 @@ public:
 	openGL::SDLWinWrapper *_winPtr;
 	world::Chunk *_chunkPtr;
 	world::ControlPts *_controlPts;
+	world::PointsLights *_pointLights;
 
 	// others setting attributs
 	bool _rayCastingEnable;
@@ -29,7 +31,7 @@ public:
 	const static float camMinSpeed;
 	const static float camMaxSpeed;
 
-	AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts);
+	AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts, world::PointsLights *pointLights);
 	~AppSettings() = default;
 
 	glm::ivec2 windowSize() const;

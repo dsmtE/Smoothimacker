@@ -6,7 +6,7 @@
 const float AppSettings::camMaxSpeed = 30.f;
 const float AppSettings::camMinSpeed = 5.f;
 
-AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts) :
+AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts, world::PointsLights *pointLights) :
 	_cursorPos(cursorPos),
 	_cameraSpeed(cameraSpeed),
 	_chunkPtr(chunkPtr),
@@ -15,6 +15,7 @@ AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk
 	_relativeMouse(SDL_FALSE),
 	_nbRandomControlPts(1),
 	_controlPts(controlPts),
+	_pointLights(pointLights),
 	_sunDir(1.0f, -1.0f, 1.0f),
 	_sunColor(1.0f, 1.0f, 1.0f) {
 		

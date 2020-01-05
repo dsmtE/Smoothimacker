@@ -8,6 +8,7 @@
 #include "openGL/Shader.hpp"
 #include "world/Chunk.hpp"
 #include "world/ControlPts.hpp"
+#include "world/PointsLights.hpp"
 #include "gui/Menu.hpp"
 #include <SDL.h>
 
@@ -20,14 +21,15 @@ class App : public IApp {
 private:
 	// attributs
 	world::Camera _cam;
-	openGL::Shader _cursorShader, _chunkShader, _controlPtsShader, _gridShader;
+	openGL::Shader _cursorShader, _chunkShader, _controlPtsShader, _gridShader, _pointsLightsShader;
 	world::Chunk _chunk;
 	world::Cursor _cursor;
 	world::Grid _grid;
-	world::ControlPts _controlPts;
+	world::ControlPts _controlPts;  
+	world::PointsLights _pointLights;
+	AppSettings _settings;
 	gui::Menu _menu;
 
-	AppSettings _settings;
 
 	// methods
 	void handleSDLEvents(SDL_Event sdlEvent) override;
