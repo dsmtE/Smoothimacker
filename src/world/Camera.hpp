@@ -69,7 +69,7 @@ namespace world {
 		inline float getZoom() const { return _zoom; }
 		inline glm::vec3 getFrontDir() const { return _front; }
 		inline float* getCameraSpeedPtr() { return &_movementSpeed; };
-
+		inline glm::vec3 getPos() const { return _position; };
 		// input fonctions
         void handleEvents(const unsigned int &deltaTime);
 		void handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &relativeMouse);

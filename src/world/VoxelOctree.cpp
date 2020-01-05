@@ -73,6 +73,14 @@ glm::vec3 VoxelOctree::getColor(const glm::uvec3 &pos) {
     return getValue(pos).color;
 }
 
+glm::vec3* VoxelOctree::getColorPtr(const glm::uvec3 &pos) {
+    CubeVertex* val = getPtrValue(pos);
+    if(val != nullptr) {
+        return &(val->color);
+    }
+    return nullptr;
+}
+
 bool VoxelOctree::delAt(const glm::uvec3 &pos, const bool updateFaceMask) {   
     if( delValue(pos) ) {
         std::vector<std::pair<Direction, CubeVertex*>> adjCubes = getAdjacentsCubes(pos);

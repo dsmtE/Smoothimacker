@@ -16,7 +16,7 @@
 
 using namespace gui;
 
-Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr), _settings(settings) {
+Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr), _settings(settings),  _rbfDysplayRange(10.0f) {
 	//icons
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
@@ -28,7 +28,6 @@ Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr),
 	icons_config.PixelSnapH = true;
 	io.Fonts->AddFontFromFileTTF("assets/fonts/fa-solid-900.ttf", 16.0f, &icons_config, icons_ranges);
 
-	// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 };
 
 void Menu::handleEvent(SDL_Event sdlEvent) {
@@ -58,8 +57,6 @@ void Menu::drawTools() {
 		// or using lambda function with [this]() {createAction(); };
 		_tool.setAction(std::bind(&Menu::createAction, this));
 	}
-	
-	
 	
 	if (ImGui::Selectable(ICON_FA_ERASER " Delete", selected == 1)) {
 		selected = 1;
@@ -98,13 +95,13 @@ void Menu::lightsSettings() {
 	ImGui::Spacing();
 	ImGui::Columns(2, NULL, false);
 	if (ImGui::Button(ICON_FA_LIGHTBULB)) {
-		//TO ADD
+		_settings->_pointLights->addPointLight(*(_settings->_cursorPos),  1.0f, 0.09f, 0.032f, _settings->_colorPick * 0.1f, _settings->_colorPick);
 	}
 	ImGui::SameLine();
 	ImGui::Text("Add   ");
 	ImGui::NextColumn();
 	if (ImGui::Button(ICON_FA_TRASH)) {
-		//TO ADD
+		_settings->_pointLights->delPointLight(*(_settings->_cursorPos));
 	}
 	ImGui::SameLine();
 	ImGui::Text("Delete ");
@@ -125,7 +122,9 @@ void Menu::randomGeneration() {
 	ImGui::Text("Add   ");
 	
 	if (ImGui::Button(ICON_FA_TRASH)) {
-		//TO DO
+		if(_settings->_controlPts->delControlPts(*(_settings->_cursorPos))) {
+			_settings->_nbRandomControlPts--;
+		}
 	}
 	ImGui::SameLine();
 	ImGui::Text("Delete");
@@ -170,34 +169,41 @@ void Menu::editCursorPos() {
 	if ( ImGui::InputInt("Z", &(_settings->_cursorPos->z))  ) {
 		_settings->_cursorPos->z = std::clamp( _settings->_cursorPos->z, 0, int(_settings->_chunkPtr->size()) );
 	}
-	ImGui::Spacing();
 }
 
 void Menu::drawMenuBar() {
 	if (ImGui::BeginMainMenuBar(), ImGuiWindowFlags_NoBringToFrontOnFocus) {
 		if (ImGui::BeginMenu("Menu")) {
 			if (ImGui::MenuItem("New")) {
-				// CLEAR VOXELS
+				// Clear voxel, new scene
+				_settings->_chunkPtr->reset();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Save File")) {
-				// save file, open file Handler
-				//fileHandler.OpenWindow(FileHandler::Window::FILE_SAVE);
-			}
-			if (ImGui::MenuItem("Load File")) {
-				//fileHandler.OpenWindow(FileHandler::Window::FILE_OPEN);
-			}
+			// if (ImGui::MenuItem("Save File")) {
+			// 	// save file, open file Handler
+			// 	//fileHandler.OpenWindow(FileHandler::Window::FILE_SAVE);
+			// }
+			// if (ImGui::MenuItem("Load File")) {
+			// 	//fileHandler.OpenWindow(FileHandler::Window::FILE_OPEN);
+			// }
 			if (ImGui::MenuItem("Exit")) {
 				_settings->exit();
 			}
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Options")) {
+		if (ImGui::BeginMenu("Scene Options")) {
 
 			ImGui::Checkbox("enable rayCasting", &(_settings->_rayCastingEnable));
+ 
+			ImGui::Separator();
+		
+			ImGui::Text("Night"); ImGui::SameLine();
+			ImGui::SliderFloat("", &(_settings->_dayMode), 0.0f, 1.0f);
+			ImGui::SameLine(); ImGui::Text("Day");
+			ImGui::Checkbox("anim Sun", &(_settings->_animSun));
 
-			ImGui::Spacing();
+			ImGui::Separator();
 
 			ImGui::Text("camera speed");
 			ImGui::SliderFloat("camSpeed", _settings->_cameraSpeed, AppSettings::camMinSpeed, AppSettings::camMaxSpeed);
@@ -234,6 +240,33 @@ void Menu::drawMenuBar() {
 			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Generation with control points");
 			ImGui::TextWrapped("Position the cursor and click the button to add or delete a control point. Or, put the number of control point you want and click 'random points' to generate random control points. ");
 			ImGui::Text("Click 'Generate map' to generate a map.");
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Radial Basis Functions")) {
+			ImGui::SliderFloat("decrease rate", &_settings->_rbfAlpha, 0.0f, 1.0f);
+			ImGui::SliderFloat("base level value", &_settings->_rbfLevel, 0.0f, 0.2f);
+			ImGui::Separator();
+
+			float values[200];
+			for (size_t i = 0; i < 200; i++) {
+				values[i] = _settings->_rbf(_rbfDysplayRange * float(i)/float(200));
+			}
+			
+			if (ImGui::Combo("func", &_selectedRbfId, "quadratic\0gaussian\0") ) {
+				switch (_selectedRbfId) {
+				case 0:
+					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
+					break;
+				case 1:
+					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlGaussian, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
+					break;
+				default:
+					break;
+				}
+			}
+        	ImGui::SliderFloat("display max value", &_rbfDysplayRange, 1.0f, 20.0f);
+			ImGui::PlotLines("radial funct", values, IM_ARRAYSIZE(values), 0, nullptr, 0.0f, 1.0f, ImVec2(0,80));
 
 			ImGui::EndMenu();
 		}
@@ -258,6 +291,14 @@ void Menu::drawMenu() {
 	Menu::randomGeneration();
 	Menu::editCursorPos();
 
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Separator();
+
+	// infos
+	ImGui::Text("informations");
+	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
 	ImGui::End();
 }
 
@@ -272,11 +313,29 @@ void Menu::deleteAction() {
 }
 
 void Menu::digAction() {
-	std::cout << "dig function undefined yet" << std::endl;
+	glm::ivec3 tempPos = *(_settings->_cursorPos);
+	if(_chunkPtr->getColorPtr(tempPos) != nullptr) {
+		tempPos += glm::ivec3(0,1,0); // ignore the first iteration already tested
+		while (_chunkPtr->getColorPtr(tempPos) != nullptr && tempPos.y < _chunkPtr->size()-1) { // loop until we find the top of our column
+			tempPos.y +=1;
+		}
+		_chunkPtr->delAt(tempPos - glm::ivec3(0,1,0)); // delete cube on top
+	} else {
+		std::cout << "there is no cube here." << std::endl;
+	}
 }
 
 void Menu::extrudeAction() {
-	std::cout << "dig function undefined yet" << std::endl;
+	glm::ivec3 tempPos = *(_settings->_cursorPos);
+	if(_chunkPtr->getColorPtr(tempPos) != nullptr) {
+		tempPos += glm::ivec3(0,1,0); // ignore the first iteration already tested
+		while (_chunkPtr->getColorPtr(tempPos) != nullptr && tempPos.y < _chunkPtr->size()-1) { // loop until we find the top of our column
+			tempPos += glm::ivec3(0,1,0);
+		}
+		_chunkPtr->setColor(tempPos, _chunkPtr->getColor(tempPos - glm::ivec3(0,1,0))); // create on top
+	} else {
+		std::cout << "there is no cube here." << std::endl;
+	}
 }
 
 void Menu::paintAction() {

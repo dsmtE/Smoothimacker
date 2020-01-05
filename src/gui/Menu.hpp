@@ -14,6 +14,9 @@ namespace gui {
 		Tool _tool;
 		world::Chunk *_chunkPtr;
 		AppSettings *_settings;
+
+		float _rbfDysplayRange;
+		int _selectedRbfId;
 	
 		void createAction();
 		void deleteAction();

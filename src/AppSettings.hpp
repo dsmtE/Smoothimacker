@@ -5,6 +5,8 @@
 #include "openGL/SDLWinWrapper.hpp"
 #include "world/ControlPts.hpp"
 #include "world/Chunk.hpp"
+#include "world/PointsLights.hpp"
+#include "imath/RadialBasisFunction.hpp"
 
 class AppSettings {
 
@@ -15,6 +17,7 @@ public:
 	openGL::SDLWinWrapper *_winPtr;
 	world::Chunk *_chunkPtr;
 	world::ControlPts *_controlPts;
+	world::PointsLights *_pointLights;
 
 	// others setting attributs
 	bool _rayCastingEnable;
@@ -24,6 +27,13 @@ public:
 	// light settings
 	glm::vec3 _sunDir;
 	glm::vec3 _sunColor;
+	float _dayMode;
+	bool _animSun;
+
+	//radial basis functions
+	float _rbfLevel;
+	float _rbfAlpha;
+	std::function< float(float)> _rbf;
 
 	//color setting
 	glm::vec3 _colorPick;
@@ -32,7 +42,7 @@ public:
 	const static float camMinSpeed;
 	const static float camMaxSpeed;
 
-	AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts);
+	AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk *chunkPtr, openGL::SDLWinWrapper* winPtr, world::ControlPts *controlPts, world::PointsLights *pointLights);
 	~AppSettings() = default;
 
 	glm::ivec2 windowSize() const;

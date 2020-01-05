@@ -44,6 +44,7 @@ namespace world {
 		/// return color at given position if exist else throw string error 
 		/// catch(string const& str) {cerr << str << endl; }
 		glm::vec3 getColor(const glm::uvec3 &pos);
+		glm::vec3* getColorPtr(const glm::uvec3 &pos);
 		/// del value in our data array and octree coresponding id
 		bool delAt(const glm::uvec3 &pos, const bool updateFaceMask = true);
 		bool setColor(const glm::uvec3 &pos, const glm::vec3 &color,  const bool updateFaceMask = true);

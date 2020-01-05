@@ -11,6 +11,7 @@
 
 #include "Camera.hpp"
 #include "VoxelOctree.hpp"
+#include "PointsLights.hpp"
 
 namespace world {
 	
@@ -44,13 +45,14 @@ namespace world {
 
         //---------- Methods ----------//
 
-		void draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor);
+		void draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor, const std::vector<world::PointLight> &lights, const float &dayMode);
 
         // cubes setters and getters
 
 		/// return type at given position if exist else throw string error 
 		/// catch(string const& str) {cerr << str << endl; }
 		const glm::vec3 getColor(const glm::uvec3 &pos);
+		glm::vec3* getColorPtr(const glm::uvec3 &pos);
 		/// del value in our data array and octree coresponding id
 		bool delAt(const glm::uvec3 &pos);
 		bool setColor(const glm::uvec3& pos, const glm::vec3 &color, const bool updateFaceMask = true);
