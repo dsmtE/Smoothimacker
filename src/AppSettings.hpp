@@ -6,6 +6,7 @@
 #include "world/ControlPts.hpp"
 #include "world/Chunk.hpp"
 #include "world/PointsLights.hpp"
+#include "imath/RadialBasisFunction.hpp"
 
 class AppSettings {
 
@@ -26,6 +27,13 @@ public:
 	// light settings
 	glm::vec3 _sunDir;
 	glm::vec3 _sunColor;
+	float _dayMode;
+	bool _animSun;
+
+	//radial basis functions
+	float _rbfLevel;
+	float _rbfAlpha;
+	std::function< float(float)> _rbf;
 
 	//static attributs
 	const static float camMinSpeed;

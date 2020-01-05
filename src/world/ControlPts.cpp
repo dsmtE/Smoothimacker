@@ -45,6 +45,8 @@ ControlPts::ControlPts(const glm::vec3 &color) : _color(color) {
     _instanceVBO.setAttribDivisor(vertexAttrib_cubePosition, 1); // tell OpenGL this is an instanced vertex attribute.
 	_instanceVBO.unbind();
     _VAO.unbind();
+
+    addControlPts(glm::vec3(0.0f, 0.0f, 0.0f));
 }   
 
 void ControlPts::draw(const Camera &cam, openGL::Shader &shader) {

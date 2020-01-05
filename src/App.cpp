@@ -7,6 +7,8 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/color_space.hpp>
 #include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 #include <iostream>
 
@@ -104,10 +106,18 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 void App::loop() {
 	while (isRunning()) {
 		beginFrame();
+
+		if(_settings._animSun) {
+			_settings._sunDir = glm::rotate(_settings._sunDir, 0.0008f, glm::vec3(1.0f, 0.0f, -0.6f));
+			if ( _settings._sunDir.y > -0.1f) {// accelerate during night (when sundir is under our scene)
+				_settings._sunDir = glm::rotate(_settings._sunDir, 0.005f, glm::vec3(1.0f, 0.0f, -0.6f));
+			}
+		}
+
 		_menu.drawMenu();
 		_grid.draw(_cam, _gridShader);
 		_pointLights.draw(_cam, _pointsLightsShader);
-		_chunk.draw(_cam, _chunkShader, _settings._sunDir, _settings._sunColor, _settings._pointLights->getLights()); 
+		_chunk.draw(_cam, _chunkShader, _settings._sunDir, _settings._sunColor, _settings._pointLights->getLights(), _settings._dayMode); 
 
 		glClear(GL_DEPTH_BUFFER_BIT); // for cursor overlay
 		_cursor.draw(_cam, _cursorShader);

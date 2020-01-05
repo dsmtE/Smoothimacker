@@ -11,11 +11,12 @@
 #include "../imath/RadialBasisFunction.hpp"
 
 #include "../world/Cursor.hpp"
-
+ 
 
 using namespace gui;
 
-Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr), _settings(settings) {};
+Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr), _settings(settings),  _rbfDysplayRange(10.0f) {
+};
 
 void Menu::handleEvent(SDL_Event sdlEvent) {
 	_tool.handleSDLEvents(sdlEvent);
@@ -74,30 +75,66 @@ void Menu::drawMenuBar() {
 	if (ImGui::BeginMainMenuBar(), ImGuiWindowFlags_NoBringToFrontOnFocus) {
 		if (ImGui::BeginMenu("Menu")) {
 			if (ImGui::MenuItem("New")) {
-				// CLEAR VOXELS
+				// Clear voxel, new scene
+				_settings->_chunkPtr->reset();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Save File")) {
-				// save file, open file Handler
-				//fileHandler.OpenWindow(FileHandler::Window::FILE_SAVE);
-			}
-			if (ImGui::MenuItem("Load File")) {
-				//fileHandler.OpenWindow(FileHandler::Window::FILE_OPEN);
-			}
+			// if (ImGui::MenuItem("Save File")) {
+			// 	// save file, open file Handler
+			// 	//fileHandler.OpenWindow(FileHandler::Window::FILE_SAVE);
+			// }
+			// if (ImGui::MenuItem("Load File")) {
+			// 	//fileHandler.OpenWindow(FileHandler::Window::FILE_OPEN);
+			// }
 			if (ImGui::MenuItem("Exit")) {
 				_settings->exit();
 			}
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Options")) {
+		if (ImGui::BeginMenu("Scene Options")) {
 
 			ImGui::Checkbox("enable rayCasting", &(_settings->_rayCastingEnable));
+ 
+			ImGui::Separator();
+		
+			ImGui::Text("Night"); ImGui::SameLine();
+			ImGui::SliderFloat("", &(_settings->_dayMode), 0.0f, 1.0f);
+			ImGui::SameLine(); ImGui::Text("Day");
+			ImGui::Checkbox("anim Sun", &(_settings->_animSun));
 
-			ImGui::Spacing();
+			ImGui::Separator();
 
 			ImGui::Text("camera speed");
 			ImGui::SliderFloat("camSpeed", _settings->_cameraSpeed, AppSettings::camMinSpeed, AppSettings::camMaxSpeed);
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Radial Basis Functions")) {
+			ImGui::SliderFloat("decrease rate", &_settings->_rbfAlpha, 0.0f, 1.0f);
+			ImGui::SliderFloat("base level value", &_settings->_rbfLevel, 0.0f, 0.2f);
+			ImGui::Separator();
+
+			float values[200];
+			for (size_t i = 0; i < 200; i++) {
+				values[i] = _settings->_rbf(_rbfDysplayRange * float(i)/float(200));
+			}
+			
+			if (ImGui::Combo("func", &_selectedRbfId, "quadratic\0gaussian\0") ) {
+				switch (_selectedRbfId) {
+				case 0:
+					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
+					break;
+				case 1:
+					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlGaussian, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
+					break;
+				default:
+					break;
+				}
+			}
+        	ImGui::SliderFloat("display max value", &_rbfDysplayRange, 1.0f, 20.0f);
+			ImGui::PlotLines("radial funct", values, IM_ARRAYSIZE(values), 0, nullptr, 0.0f, 1.0f, ImVec2(0,80));
 
 			ImGui::EndMenu();
 		}
@@ -121,7 +158,7 @@ void Menu::drawMenu() {
 	ImGui::Spacing();
 
 	if (ImGui::Button("Generate map")) {
-		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, 0.03, 0.03)));
+		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), _settings->_rbf);
 	}
 
 	if (ImGui::Button("random control pts")) {
@@ -174,11 +211,29 @@ void Menu::deleteAction() {
 }
 
 void Menu::digAction() {
-	std::cout << "dig function undefined yet" << std::endl;
+	glm::ivec3 tempPos = *(_settings->_cursorPos);
+	if(_chunkPtr->getColorPtr(tempPos) != nullptr) {
+		tempPos += glm::ivec3(0,1,0); // ignore the first iteration already tested
+		while (_chunkPtr->getColorPtr(tempPos) != nullptr && tempPos.y < _chunkPtr->size()-1) { // loop until we find the top of our column
+			tempPos.y +=1;
+		}
+		_chunkPtr->delAt(tempPos - glm::ivec3(0,1,0)); // delete cube on top
+	} else {
+		std::cout << "there is no cube here." << std::endl;
+	}
 }
 
 void Menu::extrudeAction() {
-	std::cout << "dig function undefined yet" << std::endl;
+	glm::ivec3 tempPos = *(_settings->_cursorPos);
+	if(_chunkPtr->getColorPtr(tempPos) != nullptr) {
+		tempPos += glm::ivec3(0,1,0); // ignore the first iteration already tested
+		while (_chunkPtr->getColorPtr(tempPos) != nullptr && tempPos.y < _chunkPtr->size()-1) { // loop until we find the top of our column
+			tempPos += glm::ivec3(0,1,0);
+		}
+		_chunkPtr->setColor(tempPos, _chunkPtr->getColor(tempPos - glm::ivec3(0,1,0))); // create on top
+	} else {
+		std::cout << "there is no cube here." << std::endl;
+	}
 }
 
 void Menu::paintAction() {

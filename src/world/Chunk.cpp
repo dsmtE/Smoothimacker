@@ -44,7 +44,7 @@ void Chunk::setVBOdata() {
 // 	return pos;
 // }
 
-void Chunk::draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor, const std::vector<world::PointLight> &lights) {
+void Chunk::draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &sunDir, const glm::vec3 &sunColor, const std::vector<world::PointLight> &lights, const float &dayMode) {
 	if (needUpdateVBO) {
 		setVBOdata(); // update data in VBO
 		needUpdateVBO = false;
@@ -60,6 +60,8 @@ void Chunk::draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &su
 		s.setMat4("ModelMatrix", modelMatrix);
 		s.setVec3f("sunColor", sunColor);
 		s.setVec3f("sunDir", sunDir);
+		s.setFloat("dayMode", dayMode);
+		s.setVec3f("camPos", c.getPos());
 
 		s.setInt("nbOfPointsLight", lights.size());
 
@@ -86,6 +88,11 @@ void Chunk::draw(const world::Camera &c,  openGL::Shader &s, const glm::vec3 &su
 const glm::vec3 Chunk::getColor(const glm::uvec3 &pos) {
 	return _cubes.getColor(pos);
 }
+
+glm::vec3* Chunk::getColorPtr(const glm::uvec3 &pos) {
+	return _cubes.getColorPtr(pos);
+}
+
 
 bool Chunk::delAt(const glm::uvec3 &pos) {
 	if ( _cubes.delAt(pos) ) {
