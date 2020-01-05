@@ -36,7 +36,7 @@ App::App(int width, int height, const char* title) :
 	for (unsigned int i = 0; i < _chunk.size(); i++) {
 		for (unsigned int j = 0; j < _chunk.size(); j++) {
 			for (unsigned int k = 0; k < 3; k++) {
-				_chunk.setColor(glm::uvec3(i, k, j), glm::rgbColor( glm::vec3(float(k+1)/float(3) * 360.0f, 0.6f, 1.0f)));
+				_chunk.setColor(glm::uvec3(i, k, j), glm::vec3(0.435f, 0.569f, 0.133f));
 			}
 		}
 	}
