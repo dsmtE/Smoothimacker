@@ -72,7 +72,7 @@ void Menu::drawTools() {
 	
 	ImGui::NextColumn();
 
-	if (ImGui::Selectable(ICON_FA_CUBES, " Extrude", selected == 2)) {
+	if (ImGui::Selectable(ICON_FA_CUBES " Extrude", selected == 2)) {
 		selected = 2;
 		std::cout << "assign EXTRUDE strategy" << std::endl;
 		_tool.setAction(std::bind(&Menu::extrudeAction, this));
@@ -98,17 +98,19 @@ void Menu::drawTools() {
 void Menu::lightsSettings() {
 	ImGui::Text("Lights");
 	ImGui::Spacing();
+	ImGui::Columns(2, NULL, false);
 	if (ImGui::Button(ICON_FA_LIGHTBULB)) {
 		//TO ADD
 	}
 	ImGui::SameLine();
 	ImGui::Text("Add   ");
-	ImGui::SameLine();
+	ImGui::NextColumn();
 	if (ImGui::Button(ICON_FA_TRASH)) {
 		//TO ADD
 	}
 	ImGui::SameLine();
 	ImGui::Text("Delete ");
+	ImGui::Columns(1);
 	ImGui::Separator();
 	ImGui::Spacing();
 }
@@ -116,32 +118,36 @@ void Menu::lightsSettings() {
 void Menu::randomGeneration() {
 	ImGui::Text("Generation with control points");
 	ImGui::Spacing();
+	ImGui::Columns(2, NULL, false);
 	if (ImGui::Button(ICON_FA_PLUS)) {
 		_settings->_controlPts->addControlPts(*(_settings->_cursorPos));
 		_settings->_nbRandomControlPts++;
 	}
 	ImGui::SameLine();
 	ImGui::Text("Add   ");
-	ImGui::SameLine();
+	
 	if (ImGui::Button(ICON_FA_TRASH)) {
 		//TO DO
 	}
 	ImGui::SameLine();
 	ImGui::Text("Delete");
-	ImGui::Spacing();
 
-	ImGui::SetNextItemWidth(70);
+	ImGui::NextColumn();
+
+	ImGui::SetNextItemWidth(100);
 	ImGui::InputInt("", &(_settings->_nbRandomControlPts));
 	assert(_settings->_nbRandomControlPts >= 0);
-	ImGui::SameLine();
-	if (ImGui::Button("Random control pts")) {
+	
+
+	if (ImGui::Button("Random points")) {
 		_settings->_controlPts->resetControlPts();
 		for (size_t i = 0; i < _settings->_nbRandomControlPts; i++) {
 			_settings->_controlPts->addControlPts(imath::genVec3(_settings->_chunkPtr->size()));
 		}
 	}
+	
+	ImGui::Columns(1);
 	ImGui::Spacing();
-
 	if (ImGui::Button("Generate map")) {
 		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, 0.03, 0.03)));
 	}
@@ -202,8 +208,34 @@ void Menu::drawMenuBar() {
 		}
 
 		if (ImGui::BeginMenu("Help")) {
-
-			ImGui::Text("");
+			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Camera");
+			ImGui::Text("Lock/unlock camera: R");
+			ImGui::Text("Zoom: wheel");
+			ImGui::Text("Camera rotation: wheel click");
+			ImGui::Text("Move camera to right: D");
+			ImGui::Text("Move camera to left: Q");
+			ImGui::Text("Move camera to back: S");
+			ImGui::Text("Move camera to front: Z");
+			ImGui::Text("Move camera up: space bar");
+			ImGui::Text("Move camera down: shift");
+			ImGui::Spacing();
+			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Cursor");
+			ImGui::Text("Move cursor to right: numpad " ICON_FA_ARROW_RIGHT);
+			ImGui::Text("Move cursor to left: numpad " ICON_FA_ARROW_LEFT);
+			ImGui::Text("Move cursor to top: numpad " ICON_FA_ARROW_UP);
+			ImGui::Text("Move cursor to bottom: numpad " ICON_FA_ARROW_DOWN);
+			ImGui::Text("Move cursor to front: numpad " ICON_FA_PLUS);
+			ImGui::Text("Move cursor to back: numpad " ICON_FA_MINUS);
+			ImGui::Spacing();
+			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Tools");
+			ImGui::Text("Select your tool, position the cursor and press 'A' to use your tool.");
+			ImGui::Spacing();
+			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Lights");
+			ImGui::Text("Position the cursor and click the button to add or delete a point light.");
+			ImGui::Spacing();
+			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Generation with control points");
+			ImGui::TextWrapped("Position the cursor and click the button to add or delete a control point. Or, put the number of control point you want and click 'random points' to generate random control points. ");
+			ImGui::Text("Click 'Generate map' to generate a map.");
 
 			ImGui::EndMenu();
 		}
