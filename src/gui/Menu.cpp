@@ -17,7 +17,7 @@
 using namespace gui;
 
 Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr), _settings(settings) {
-	/* icons */
+	//icons
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
 
@@ -27,9 +27,7 @@ Menu::Menu(world::Chunk* chunkPtr, AppSettings* settings) : _chunkPtr(chunkPtr),
 	icons_config.MergeMode = true;
 	icons_config.PixelSnapH = true;
 	io.Fonts->AddFontFromFileTTF("assets/fonts/fa-solid-900.ttf", 16.0f, &icons_config, icons_ranges);
-	io.Fonts->AddFontFromFileTTF("assets/fonts/fa-regular-400.ttf", 16.0f, &icons_config, icons_ranges);
-	io.Fonts->AddFontFromFileTTF("assets/fonts/fa-brands-400.ttf", 16.0f, &icons_config, icons_ranges);
-	io.Fonts->AddFontFromFileTTF("assets/fonts/fa-light-300.ttf", 16.0f, &icons_config, icons_ranges);
+
 	// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 };
 
@@ -40,10 +38,9 @@ void Menu::handleEvent(SDL_Event sdlEvent) {
 void Menu::colorPicker() {
 	ImGui::Text("Color picker:");
 	ImGuiColorEditFlags misc_flags = (ImGuiColorEditFlags_HDR) | (ImGuiColorEditFlags_NoOptions);
-	static ImVec4 color = ImVec4(114.0f / 255.0f, 144.0f / 255.0f, 154.0f / 255.0f, 200.0f / 255.0f);
 	ImGuiColorEditFlags flags = misc_flags;
 	flags |= ImGuiColorEditFlags_DisplayRGB;
-	ImGui::ColorPicker4("MyColor", (float*)&color, flags);
+	ImGui::ColorPicker3("MyColor", (float*)&(_settings->_colorPick), flags);
 	ImGui::Spacing();
 	ImGui::Separator();
 }
@@ -57,7 +54,7 @@ void Menu::drawTools() {
 
 	if (ImGui::Selectable(ICON_FA_CUBE " Create", selected == 0)) {
 		selected = 0;
-		std::cout << "assign CREATE strategy" << std::endl;
+		//assign CREATE strategy
 		// or using lambda function with [this]() {createAction(); };
 		_tool.setAction(std::bind(&Menu::createAction, this));
 	}
@@ -66,7 +63,7 @@ void Menu::drawTools() {
 	
 	if (ImGui::Selectable(ICON_FA_ERASER " Delete", selected == 1)) {
 		selected = 1;
-		std::cout << "assign DELETE strategy" << std::endl;
+		//assign DELETE strategy
 		_tool.setAction(std::bind(&Menu::deleteAction, this));
 	}
 	
@@ -74,13 +71,13 @@ void Menu::drawTools() {
 
 	if (ImGui::Selectable(ICON_FA_CUBES " Extrude", selected == 2)) {
 		selected = 2;
-		std::cout << "assign EXTRUDE strategy" << std::endl;
+		//assign EXTRUDE strategy
 		_tool.setAction(std::bind(&Menu::extrudeAction, this));
 	}
 
 	if (ImGui::Selectable(ICON_FA_KIWI_BIRD " Dig", selected == 3)) {
 		selected = 3;
-		std::cout << "assign DIG strategy" << std::endl;
+		//assign DIG strategy
 		_tool.setAction(std::bind(&Menu::digAction, this));
 	}
 
@@ -88,7 +85,8 @@ void Menu::drawTools() {
 	
 	if (ImGui::Selectable(ICON_FA_PAINT_BRUSH " Paint", selected == 4)) {
 		selected = 4;
-		//TODO
+		//assign PAINT strategy
+		_tool.setAction(std::bind(&Menu::paintAction, this));
 	}
 	ImGui::Columns(1);
 	ImGui::Separator();
@@ -224,8 +222,8 @@ void Menu::drawMenuBar() {
 			ImGui::Text("Move cursor to left: numpad " ICON_FA_ARROW_LEFT);
 			ImGui::Text("Move cursor to top: numpad " ICON_FA_ARROW_UP);
 			ImGui::Text("Move cursor to bottom: numpad " ICON_FA_ARROW_DOWN);
-			ImGui::Text("Move cursor to front: numpad " ICON_FA_PLUS);
-			ImGui::Text("Move cursor to back: numpad " ICON_FA_MINUS);
+			ImGui::Text("Move cursor to front: numpad " ICON_FA_MINUS);
+			ImGui::Text("Move cursor to back: numpad " ICON_FA_PLUS);
 			ImGui::Spacing();
 			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Tools");
 			ImGui::Text("Select your tool, position the cursor and press 'A' to use your tool.");
@@ -265,7 +263,8 @@ void Menu::drawMenu() {
 
 // action callBack functions
 void Menu::createAction() {
-	_chunkPtr->setColor(*(_settings->_cursorPos), glm::vec3(1, 1, 0.9));
+	_chunkPtr->setColor(*(_settings->_cursorPos), _settings->_colorPick);
+
 }
 
 void Menu::deleteAction() {
@@ -281,5 +280,5 @@ void Menu::extrudeAction() {
 }
 
 void Menu::paintAction() {
-	std::cout << "paint function undefined yet" << std::endl;
+	_chunkPtr->setColor(*(_settings->_cursorPos), _settings->_colorPick);
 }
