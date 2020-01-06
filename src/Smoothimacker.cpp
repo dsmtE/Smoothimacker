@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 // SDL
 #include <SDL.h>
@@ -16,14 +17,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// 
 #include "App.hpp"
-#include "world/Cursor.hpp"
-#include "world/Camera.hpp"
 
 int main(int argc, char *argv[]) {
     
   std::cout << "---------- Smoothimacker ----------" << std::endl;
+  App app(1280, 720, "Smoothimacker");
+  app.loop();
 
   return 0;
 }
