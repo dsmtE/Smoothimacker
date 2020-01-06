@@ -33,7 +33,7 @@ namespace world {
 
     public:
 
-        ControlPts(const glm::vec3 &color = glm::vec3(1, 0, 0));
+        ControlPts(const glm::vec3 &color = glm::vec3(0, 0, 1));
         ~ControlPts() = default;
         
         void draw(const Camera &cam, openGL::Shader &shader);

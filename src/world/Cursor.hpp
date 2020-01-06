@@ -35,7 +35,7 @@ namespace world {
 
     public:
 
-        Cursor(const unsigned int &minLimit, const unsigned int &maxLimit, const glm::vec3 &color = glm::vec3(0, 0, 1));
+        Cursor(const unsigned int &minLimit, const unsigned int &maxLimit, const glm::vec3 &color = glm::vec3(1, 0, 0));
         ~Cursor() = default;
         
         void draw(const Camera &cam, openGL::Shader &shader);
