@@ -34,6 +34,8 @@ App::App(int width, int height, const char* title) :
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	_cursor.setCameraReference(_cam); // set cam as reference for cursor mouvement with keyboard
 
+	// init default sunDir
+	_settings._sunDir = glm::rotate(_settings._sunDir, 0.8f, glm::vec3(1.0f, 0.0f, -0.6f));
 
 	auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -109,9 +111,9 @@ void App::loop() {
 		beginFrame();
 
 		if(_settings._animSun) {
-			_settings._sunDir = glm::rotate(_settings._sunDir, 0.0008f, glm::vec3(1.0f, 0.0f, -0.6f));
+			_settings._sunDir = glm::rotate(_settings._sunDir, 0.0008f * float(_deltaTime), glm::vec3(1.0f, 0.0f, -0.6f));
 			if ( _settings._sunDir.y > -0.1f) {// accelerate during night (when sundir is under our scene)
-				_settings._sunDir = glm::rotate(_settings._sunDir, 0.005f, glm::vec3(1.0f, 0.0f, -0.6f));
+				_settings._sunDir = glm::rotate(_settings._sunDir, 0.005f * float(_deltaTime), glm::vec3(1.0f, 0.0f, -0.6f));
 			}
 		}
 

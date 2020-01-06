@@ -69,7 +69,7 @@ void PointsLights::draw(const Camera &cam, openGL::Shader &shader) {
     // set struct value using uniform
     for (GLuint i = 0; i < _lights.size(); i++) {
         std::string iStr = std::to_string(i);
-        shader.setVec3f("pointsLightsAmbiantColor[" + iStr + "].ambientColor", _lights[i].ambientColor);
+        shader.setVec3f("pointsLightsAmbiantColor[" + iStr + "]", _lights[i].ambientColor);
     }
 
     _VAO.bind();

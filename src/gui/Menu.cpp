@@ -179,13 +179,13 @@ void Menu::drawMenuBar() {
 				_settings->_chunkPtr->reset();
 			}
 			ImGui::Separator();
-			// if (ImGui::MenuItem("Save File")) {
-			// 	// save file, open file Handler
-			// 	//fileHandler.OpenWindow(FileHandler::Window::FILE_SAVE);
-			// }
-			// if (ImGui::MenuItem("Load File")) {
-			// 	//fileHandler.OpenWindow(FileHandler::Window::FILE_OPEN);
-			// }
+			if (ImGui::MenuItem("Save File")) {
+				_settings->_chunkPtr->save("save");
+
+			}
+			if (ImGui::MenuItem("Load File")) {
+				_settings->_chunkPtr->load("save");
+			}
 			if (ImGui::MenuItem("Exit")) {
 				_settings->exit();
 			}

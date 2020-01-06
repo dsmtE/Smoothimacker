@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <fstream> // for files
 
 using namespace world;
 
@@ -218,4 +219,70 @@ void VoxelOctree::updateAllFaceMask() {
             }
         }
     }
+}
+
+
+bool VoxelOctree::saveVoxelData(const char* filePath) const {
+	std::ofstream file(filePath, std::ios::out | std::ios::binary | std::ios::trunc);
+	if(!file.is_open())
+		return false;
+
+    int floatSize = sizeof(float);
+    int uIntSize = sizeof(unsigned int);
+
+    unsigned int size = _octree.size();
+	file.write((char*)& size, uIntSize);
+
+	for(const CubeVertex &cv : _data) {
+        // Position
+		file.write((char*)& cv.pos.r, uIntSize);
+		file.write((char*)& cv.pos.g, uIntSize);
+		file.write((char*)& cv.pos.b, uIntSize);
+		// Colour
+		file.write((char*)& cv.color.x, floatSize);
+		file.write((char*)& cv.color.y, floatSize);
+		file.write((char*)& cv.color.z, floatSize);
+	}
+	file.close();
+	return true;
+}
+
+DataHandler VoxelOctree::loadVoxelData(const char* filePath) {
+	std::ifstream file(filePath, std::ios::in | std::ios::binary);
+	if(!file.is_open()) {
+		return DataHandler::ERROR_NO_FILE;
+    }
+    // reset our voxelOctree
+    reset();
+
+    unsigned int* sizeBuffer = new unsigned int[1] { 0 };
+    
+    file.read((char*)sizeBuffer, sizeof(unsigned int));
+	if(sizeBuffer[0] > size()) {
+		file.close();
+		delete[] sizeBuffer;
+        std::cerr << "we can't load a file containing a chunck larger than the one we have. " << std::endl;
+		return DataHandler::ERROR_CORRUPTED;
+	}
+    std::cout << sizeBuffer[0]<< std::endl;
+    delete[] sizeBuffer;
+
+	unsigned int* posBuffer = new unsigned int[3] { 0 };
+    float* colorBuffer = new float[3] { 0.0f };
+
+	while(file.peek() != EOF) {
+        file.read((char*)posBuffer, 3 * sizeof(unsigned int));
+		file.read((char*)colorBuffer, 3 *  sizeof(float));
+		if((file.rdstate() & std::ifstream::failbit) != 0 || (file.rdstate() & std::ifstream::badbit)) { 
+			file.close(); 
+			delete[] colorBuffer;
+            delete[] posBuffer;
+			return DataHandler::ERROR_CORRUPTED; 
+		}
+        setColor(glm::uvec3(unsigned int(posBuffer[0]), unsigned int(posBuffer[1]), unsigned int(posBuffer[2])), glm::vec3(colorBuffer[0], colorBuffer[1], colorBuffer[2]));
+	}
+    updateAllFaceMask();
+	delete[] colorBuffer;
+    delete[] posBuffer;
+	return DataHandler::SUCCESS;
 }

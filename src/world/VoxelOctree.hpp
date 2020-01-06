@@ -17,6 +17,13 @@ namespace world {
 		CubeVertex(const glm::uvec3& p, const glm::vec3& c, const uint8_t& m) : pos(p), color(c), faceMask(m) {}
 	};
 
+
+	enum DataHandler {
+		SUCCESS,
+		ERROR_NO_FILE,
+		ERROR_CORRUPTED
+	};
+
 	enum Direction { Up, Down, Left, Right, Front, Back };
 
 	class  VoxelOctree : public ListLinkedOctree<CubeVertex> {
@@ -50,6 +57,10 @@ namespace world {
 		bool setColor(const glm::uvec3 &pos, const glm::vec3 &color,  const bool updateFaceMask = true);
 		// delete replaced method
 		CubeVertex*& setValue(const glm::uvec3& pos, const CubeVertex& val) = delete;
+
+
+		bool saveVoxelData(const char* filePath) const;
+		DataHandler loadVoxelData(const char* filePath);
 
 	};
 

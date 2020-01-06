@@ -76,5 +76,8 @@ namespace world {
 		inline void setCube(const unsigned int &x, const unsigned int &y, const unsigned int &z, const unsigned int &type) {setCube(glm::uvec3(x, y, z), type); }
         inline bool validCoordinate(const unsigned int& x, const unsigned int& y, const unsigned int& z) const {validCoordinate(glm::uvec3(x, y, z));}
 		*/
+		void save(const char* filePath) const;
+		void load(const char* filePath);
+
 	};
 }

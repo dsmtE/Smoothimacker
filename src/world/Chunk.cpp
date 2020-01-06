@@ -121,3 +121,34 @@ glm::mat4 Chunk::getModelMatrix() const {
 unsigned int Chunk::size() const {
 	return _cubes.size();
 };
+
+
+void Chunk::save(const char* filePath) const {
+	if(_cubes.saveVoxelData(filePath)) {
+		std::cout << "file Saved" << std::endl;
+	}else {
+		std::cerr << "error during save" << std::endl;
+	}
+}
+
+void Chunk::load(const char* filePath) {
+	DataHandler result = _cubes.loadVoxelData(filePath);
+	switch (result) {
+
+	case SUCCESS :
+		std::cout << "file loaded" << std::endl;
+		break;
+
+	case ERROR_NO_FILE :
+		std::cerr << "error no file" << std::endl;
+		break;
+
+	case ERROR_CORRUPTED :
+		std::cerr << "error corupted file" << std::endl;
+		break;
+
+	default:
+		break;
+	}
+	needUpdateVBO = true;
+}
