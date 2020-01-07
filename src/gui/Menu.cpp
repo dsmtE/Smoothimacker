@@ -146,7 +146,7 @@ void Menu::randomGeneration() {
 	ImGui::Columns(1);
 	ImGui::Spacing();
 	if (ImGui::Button("Generate map")) {
-		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, 0.03, 0.03)));
+		imath::rbf::generateTerrain(*(_settings->_chunkPtr), _settings->_controlPts->getPts(), _settings->_rbf);
 	}
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -245,7 +245,8 @@ void Menu::drawMenuBar() {
 
 		if (ImGui::BeginMenu("Radial Basis Functions")) {
 			ImGui::SliderFloat("decrease rate", &_settings->_rbfAlpha, 0.0f, 1.0f);
-			ImGui::SliderFloat("base level value", &_settings->_rbfLevel, 0.0f, 0.2f);
+			ImGui::SliderFloat("base level value", &_settings->_rbfLevel, 0.0f, 1.0f);
+			ImGui::SliderFloat("sin frequency", &_settings->_rbfsinF, 0.0f, 10.0f);
 			ImGui::Separator();
 
 			float values[200];
@@ -253,7 +254,7 @@ void Menu::drawMenuBar() {
 				values[i] = _settings->_rbf(_rbfDysplayRange * float(i)/float(200));
 			}
 			
-			if (ImGui::Combo("func", &_selectedRbfId, "quadratic\0gaussian\0") ) {
+			if (ImGui::Combo("func", &_selectedRbfId, "quadratic\0gaussian\0sinus\0") ) {
 				switch (_selectedRbfId) {
 				case 0:
 					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
@@ -261,6 +262,9 @@ void Menu::drawMenuBar() {
 				case 1:
 					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlGaussian, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
 					break;
+				case 2:
+					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainlvlSinus, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel, _settings->_rbfsinF));
+					break;						
 				default:
 					break;
 				}

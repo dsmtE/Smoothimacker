@@ -7,31 +7,24 @@
 
 using namespace imath;
 
-float rbf::terrainLvlGaussian(float d, float alpha, float lvl) { // lvl between [0, 1]
+float rbf::terrainLvlGaussian(const float &d, const float &alpha, const float &lvl) {
 	return exp( log(1.0f - lvl) - alpha * d*d) + lvl;
 }
-float rbf::terrainLvlQuadratic(float d, float alpha, float lvl) {
+float rbf::terrainLvlQuadratic(const float &d, const float &alpha, const float &lvl) {
 	return 1.0f/(1.0f/(1.0f-lvl) + alpha * d*d) + lvl;
 }
 
-float rbf::gaussian(float d, float alpha) {
-	return exp(alpha * d * d);
+float rbf::terrainlvlSinus(const float &d, const float &alpha, const float &lvl, const float &freq) {
+	return (sin(freq*d+lvl) / (freq*d+lvl) + exp(-alpha*d*d))/2.0f;
 }
 
-float rbf::linear(float d, float alpha) {
-	return alpha * d;
-}
-
-float rbf::inverseQuadri(float d, float alpha) {
-	return 1 / (1 + pow((alpha * d), 2));
-}
 
 float rbf::dist(const Eigen::Vector2f &p1, const Eigen::Vector2f &p2) {
 	// return sqrt(pow((p1(0)- p2(0)), 2) + pow((p1(1) - p2(1)), 2));
 	return (p1-p2).norm(); // Eigen does it better than us
 }
 
-Eigen::VectorXf rbf::computeOmega(const std::vector<Eigen::Vector2f> &controlePts, const Eigen::VectorXf &controlePtsValues , std::function< float(float) > radialFunction) {
+Eigen::VectorXf rbf::computeOmega(const std::vector<Eigen::Vector2f> &controlePts, const Eigen::VectorXf &controlePtsValues , const std::function< float(float) > &radialFunction) {
 	Eigen::MatrixXf A = Eigen::MatrixXf::Zero(controlePts.size(),controlePts.size());
 	// build A with controlePts & radialFunction (cf cours)
 	for (int j = 0; j < A.cols(); j++) { // size_t doesn't work ..
@@ -47,7 +40,7 @@ Eigen::VectorXf rbf::computeOmega(const std::vector<Eigen::Vector2f> &controlePt
 	//return lu.solve(controlePtsValues);
 }
 
-Eigen::VectorXf rbf::interpolate(const std::vector<Eigen::Vector2f> &evaluationPts, const std::vector<glm::vec3> &glmControlsPts, std::function< float(float) > radialFunction) {
+Eigen::VectorXf rbf::interpolate(const std::vector<Eigen::Vector2f> &evaluationPts, const std::vector<glm::vec3> &glmControlsPts, const std::function< float(float) > &radialFunction) {
 	
 	// glm to Eigen
 	std::vector<Eigen::Vector2f> controlsPtsPos;
@@ -70,7 +63,7 @@ Eigen::VectorXf rbf::interpolate(const std::vector<Eigen::Vector2f> &evaluationP
 	return interpolateValues;
 }
 
-void rbf::generateTerrain(world::Chunk &c, const std::vector<glm::vec3> &glmControlsPts, std::function< float(float) > rf) {
+void rbf::generateTerrain(world::Chunk &c, const std::vector<glm::vec3> &glmControlsPts, const std::function< float(float) > &rf) {
 	// setup evaluation pts on 2D grid
 	unsigned int chunckSize = c.size();
 	std::vector<Eigen::Vector2f> evaluationPts;

@@ -23,7 +23,7 @@ App::App(int width, int height, const char* title) :
 	_controlPtsShader("assets/shaders/controlPts.vert", "assets/shaders/controlPts.frag"),
 	_gridShader("assets/shaders/grid.vert", "assets/shaders/grid.frag"),
 	_pointsLightsShader("assets/shaders/pointsLights.vert", "assets/shaders/pointsLights.frag"),
-	_chunk(6),
+	_chunk(7),
 	_controlPts(),
 	_cursor(0, _chunk.size()),
 	_grid(_chunk.size()),

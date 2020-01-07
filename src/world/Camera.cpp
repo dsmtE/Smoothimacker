@@ -122,7 +122,7 @@ glm::mat4 Camera::PVMatrix() const {
 }
 
 glm::mat4 Camera::projectionMatrix() const { 
-	return glm::perspective(glm::radians(_zoom), float(_screenWidth)  / float(_screenHeigh), 0.1f, 200.0f);
+	return glm::perspective(glm::radians(_zoom), float(_screenWidth)  / float(_screenHeigh), 0.1f, 300.0f);
 }
 
 glm::mat4 Camera::viewMatrix() const { 

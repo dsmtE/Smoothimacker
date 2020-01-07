@@ -21,8 +21,9 @@ AppSettings::AppSettings(glm::ivec3* cursorPos, float* cameraSpeed, world::Chunk
 	_sunColor(0.97f, 0.85f, 0.54f),
 	_dayMode(1.0f),
 	_animSun(false),
-	_rbfLevel(0.03),
-	_rbfAlpha(0.03),
+	_rbfLevel(0.03f),
+	_rbfAlpha(0.03f),
+	_rbfsinF(4.0f),
 	_rbf( std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, _rbfAlpha, _rbfLevel))) {
 	}
 

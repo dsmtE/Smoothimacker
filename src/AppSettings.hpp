@@ -33,6 +33,7 @@ public:
 	//radial basis functions
 	float _rbfLevel;
 	float _rbfAlpha;
+	float _rbfsinF;
 	std::function< float(float)> _rbf;
 
 	//color setting
