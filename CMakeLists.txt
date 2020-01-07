@@ -78,6 +78,11 @@ include_directories(
 # /////////////////////////////////// BUILD ///////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 
+# call the CMakeLists.txt to make the documentation (Doxygen)
+add_subdirectory(doc)
+
+
+
 set(LIBRARIES ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} GLAD STB_IMAGE IMGUI)
 
 foreach(FILE ${MAIN_FILES})

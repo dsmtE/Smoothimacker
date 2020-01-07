@@ -15,8 +15,11 @@
 
 #include "AppSettings.hpp"
 
+///
+ ///\brief 
+ ///
+ ///
 class App : public IApp {
-
 	
 private:
 	// attributs

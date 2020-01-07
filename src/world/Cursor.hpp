@@ -17,7 +17,7 @@
 #include "../world/Camera.hpp"
 
 namespace world {
-
+    ///\brief Cursor class
     class Cursor {
 
     private:
