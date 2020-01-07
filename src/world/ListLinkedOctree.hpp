@@ -9,8 +9,8 @@
 
 namespace world {
 
-
 	template <typename T>
+	///\brief template class used to handle value in octree structure with position (olny one position per leaf)
 	class  Octree {
 
 	protected:
@@ -23,7 +23,6 @@ namespace world {
 		const uint8_t _depth; // use uint8_t because depth will never exceed 256 
 
 		//---------- private functions ----------//
-
 		bool validCoordinate(const glm::uvec3& pos) const;
 		unsigned int getMortonId(const glm::uvec3& pos);
 		// bool trySimplify();
@@ -47,18 +46,34 @@ namespace world {
 		/// return ref to ptr to value of this Octree (nullptr if not exist)
 		//T*& getthisValue();
 
-		/// return copy to ptr to value with it's position (nullptr if not exist)
+		/// 
+
+		///\brief return 
+		///\param pos
+		///\return T*&
 		T*& getValue(const glm::uvec3& pos);
+
+		///\brief return copy to ptr to value with it's position (nullptr if not exist)
+		///\param pos
+		///\return T* 
 		T* getPtrValue(const glm::uvec3& pos);
-		/// same as previous but create new ptr is not exist and return pointer 
+		///\brief same as previous but create new ptr is not exist and return pointer 
 		/// use ptr of ptr to be able to modify the value outside and because
-		/// the value necessarily exists or has just been created 
-		/// (nullptr if it has just been created )
+		/// the value necessarily exists or has just been created (nullptr if it has just been created )
+
+		///\param pos
+		///\return T** 
 		T** getOrCreateValue(const glm::uvec3& pos);
-		/// delete value at the given position if it exists 
-		/// return true if one value was deleted
+
+		///\brief delete value at the given position if it exists
+		///\param pos
+		///\return true if one value was deleted 
 		bool delValue(const glm::uvec3& pos);
-		/// set value if aleady exist, create new if not exist using copy constuctor of T
+
+		///\brief set value if aleady exist, create new if not exist using copy constuctor of T
+		///\param pos
+		///\param val
+		///\return T*& 
 		T*& setValue(const glm::uvec3& pos, const T& val);
 
 		void cleanValues();
@@ -88,15 +103,27 @@ namespace world {
 		inline unsigned int capacity() const { return _octree.capacity(); };
 
 		//---------- Operators & functions ----------//
-		/// return value at given position if exist else throw string error 
-		/// catch(string const& str) {cerr << str << endl; }
+
+		///\brief return value at given position if exist else throw string error ( catch(string const& str) {cerr << str << endl; })
+		///\param pos
+		///\return T& 
 		T& getValue(const glm::uvec3& pos);
 		T* getPtrValue(const glm::uvec3& pos);
-		/// del value in our data array and octree coresponding id
+
+		///\brief del value in our data array and octree coresponding id
+		///\param pos
+		///\return true if one value has been deleted
 		bool delValue(const glm::uvec3& pos);
-		/// set value at given position
+
+		///\brief set value at given position
+		///\param pos
+		///\param val
+		///\return true 
+		///\return false 
 		bool setValue(const glm::uvec3& pos, const T& val);
 
+		///\brie reset all value of our octree 
+		///
 		void reset();
 	};
 
