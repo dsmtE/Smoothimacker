@@ -40,6 +40,8 @@ namespace world {
         
         void draw(const Camera &cam, openGL::Shader &shader);
 
+        void moveToCam(const Camera &cam, glm::ivec3 min, glm::ivec3 max);
+
         glm::mat4 modelMatrix() const;
 
         void handleEvent(SDL_Event sdlEvent);

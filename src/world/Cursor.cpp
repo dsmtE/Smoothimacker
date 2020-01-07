@@ -60,7 +60,16 @@ void Cursor::draw(const Camera &cam, openGL::Shader &shader) {
 
     shader.unBind();
 }
-      
+
+void Cursor::moveToCam(const Camera &cam, glm::ivec3 min, glm::ivec3 max) {
+    glm::ivec3 newCursorPos = glm::ivec3(cam.getPos() + cam.getFrontDir()*8.0f);
+    if(glm::all(glm::greaterThan(newCursorPos, min)) && glm::all(glm::lessThan(newCursorPos, max))) {
+        _position = newCursorPos;
+    }else {
+        std::cerr << "impossible to move the cursor out of bounds" << std::endl;
+    }
+}
+
 glm::mat4 Cursor::modelMatrix() const {
     glm::mat4 m(1.0f);
     m = glm::translate(m, glm::vec3(_position));

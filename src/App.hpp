@@ -15,10 +15,8 @@
 
 #include "AppSettings.hpp"
 
+///\brief main class which contains all our objects
 ///
- ///\brief 
- ///
- ///
 class App : public IApp {
 	
 private:
@@ -39,7 +37,13 @@ private:
 	void handleEvents() override;
 
 public:
+	///\brief Construct a new App with a title and size as argument
+	///
+	///\param width width of our application
+	///\param height height of our application
+	///\param title title of our application
 	App(int width, int height, const char* title);
 
+	///\brief main loop function 
 	void loop();
 };

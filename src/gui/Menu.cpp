@@ -213,13 +213,13 @@ void Menu::drawMenuBar() {
 
 		if (ImGui::BeginMenu("Help")) {
 			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Camera");
-			ImGui::Text("Lock/unlock camera: R");
+			ImGui::Text("Lock/unlock camera rotation : R");
 			ImGui::Text("Zoom: wheel");
 			ImGui::Text("Camera rotation: wheel click");
-			ImGui::Text("Move camera to right: D");
+			ImGui::Text("Move camera to front: Z");
 			ImGui::Text("Move camera to left: Q");
 			ImGui::Text("Move camera to back: S");
-			ImGui::Text("Move camera to front: Z");
+			ImGui::Text("Move camera to right: D");
 			ImGui::Text("Move camera up: space bar");
 			ImGui::Text("Move camera down: shift");
 			ImGui::Spacing();
@@ -230,6 +230,7 @@ void Menu::drawMenuBar() {
 			ImGui::Text("Move cursor to bottom: numpad " ICON_FA_ARROW_DOWN);
 			ImGui::Text("Move cursor to front: numpad " ICON_FA_MINUS);
 			ImGui::Text("Move cursor to back: numpad " ICON_FA_PLUS);
+			ImGui::Text("move cursor in front of our camera : C " ICON_FA_MOUSE_POINTER);
 			ImGui::Spacing();
 			ImGui::TextColored(ImVec4(0.25f, 0.55f, 0.85f, 1.0f), "Tools");
 			ImGui::Text("Select your tool, position the cursor and press 'A' to use your tool.");
@@ -246,7 +247,7 @@ void Menu::drawMenuBar() {
 		if (ImGui::BeginMenu("Radial Basis Functions")) {
 			ImGui::SliderFloat("decrease rate", &_settings->_rbfAlpha, 0.0f, 1.0f);
 			ImGui::SliderFloat("base level value", &_settings->_rbfLevel, 0.0f, 1.0f);
-			ImGui::SliderFloat("sin frequency", &_settings->_rbfsinF, 0.0f, 10.0f);
+			ImGui::SliderFloat("cos frequency", &_settings->_rbfsinF, 0.0f, 100.0f);
 			ImGui::Separator();
 
 			float values[200];
@@ -254,7 +255,7 @@ void Menu::drawMenuBar() {
 				values[i] = _settings->_rbf(_rbfDysplayRange * float(i)/float(200));
 			}
 			
-			if (ImGui::Combo("func", &_selectedRbfId, "quadratic\0gaussian\0sinus\0") ) {
+			if (ImGui::Combo("func", &_selectedRbfId, "quadratic\0gaussian\0cosinus\0") ) {
 				switch (_selectedRbfId) {
 				case 0:
 					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlQuadratic, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
@@ -263,13 +264,13 @@ void Menu::drawMenuBar() {
 					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainLvlGaussian, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel));
 					break;
 				case 2:
-					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainlvlSinus, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel, _settings->_rbfsinF));
+					_settings->_rbf = std::function<float(float)>(std::bind(imath::rbf::terrainlvlCosinus, std::placeholders::_1, _settings->_rbfAlpha, _settings->_rbfLevel, _settings->_rbfsinF));
 					break;						
 				default:
 					break;
 				}
 			}
-        	ImGui::SliderFloat("display max value", &_rbfDysplayRange, 1.0f, 20.0f);
+        	ImGui::SliderFloat("display max value", &_rbfDysplayRange, 1.0f, 40.0f);
 			ImGui::PlotLines("radial funct", values, IM_ARRAYSIZE(values), 0, nullptr, 0.0f, 1.0f, ImVec2(0,80));
 
 			ImGui::EndMenu();

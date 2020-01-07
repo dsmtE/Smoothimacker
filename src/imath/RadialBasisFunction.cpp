@@ -14,8 +14,8 @@ float rbf::terrainLvlQuadratic(const float &d, const float &alpha, const float &
 	return 1.0f/(1.0f/(1.0f-lvl) + alpha * d*d) + lvl;
 }
 
-float rbf::terrainlvlSinus(const float &d, const float &alpha, const float &lvl, const float &freq) {
-	return (sin(freq*d+lvl) / (freq*d+lvl) + exp(-alpha*d*d))/2.0f;
+float rbf::terrainlvlCosinus(const float &d, const float &alpha, const float &lvl, const float &freq) {
+	return (0.9f + 0.1f*cos(freq*d))*exp( log(1.0f - lvl) - alpha * d*d) +  (0.9f + 0.1f*cos(freq*d))*lvl; 
 }
 
 
@@ -27,7 +27,7 @@ float rbf::dist(const Eigen::Vector2f &p1, const Eigen::Vector2f &p2) {
 Eigen::VectorXf rbf::computeOmega(const std::vector<Eigen::Vector2f> &controlePts, const Eigen::VectorXf &controlePtsValues , const std::function< float(float) > &radialFunction) {
 	Eigen::MatrixXf A = Eigen::MatrixXf::Zero(controlePts.size(),controlePts.size());
 	// build A with controlePts & radialFunction (cf cours)
-	for (int j = 0; j < A.cols(); j++) { // size_t doesn't work ..
+	for (int j = 0; j < A.cols(); j++) {
 		for (int i = 0; i < A.rows(); i++) {
 			A(i, j) = radialFunction(dist(controlePts[i], controlePts[j]));
 		}

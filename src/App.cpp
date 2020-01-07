@@ -92,6 +92,9 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 				}
 				SDL_SetRelativeMouseMode(_settings._relativeMouse);
 			}
+			if (sdlEvent.key.keysym.sym == SDLK_c) {
+				_cursor.moveToCam(_cam, glm::ivec3(0), glm::ivec3(_chunk.size()));
+			}
 			else {
 				//printf("Keycode: %s (%d) Scancode: %s (%d) \n",
 				//SDL_GetKeyName(sdlEvent.key.keysym.sym), sdlEvent.key.keysym.sym,
