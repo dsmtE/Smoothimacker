@@ -68,7 +68,7 @@ SDLWinWrapper::SDLWinWrapper(int width, int height, const char* title) : _runnin
         title,
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // or SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         width, height,
-        SDL_WINDOW_OPENGL // | SDL_WINDOW_FULLSCREEN_DESKTOP
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE // | SDL_WINDOW_FULLSCREEN_DESKTOP
     );
 
     // Create OpenGL context
@@ -104,6 +104,12 @@ SDLWinWrapper::~SDLWinWrapper() {
     //sdl shutdown
     SDL_DestroyWindow(_window);
     SDL_Quit();
+}
+
+void SDLWinWrapper::onWindowResize() {
+    glm::ivec2 size = windowSize();
+    // update viewport
+    glViewport(0,0,size.x, size.y);
 }
 
 

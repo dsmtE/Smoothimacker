@@ -82,6 +82,16 @@ void App::handleSDLEvents(SDL_Event sdlEvent) {
 				exit();
 			}
 			break;
+		
+		case SDL_WINDOWEVENT:
+			if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED) {
+				// get new width and height and update the viewport
+				_window.onWindowResize();
+				// Update camera's ratio
+				_cam.setSize(_window.windowSize());
+			}
+		break;
+
 
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_r) {

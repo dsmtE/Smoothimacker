@@ -23,7 +23,7 @@ void Camera::updateVectors() {
 
     _front = glm::normalize(front);
     // Also re-calculate the Right and Up vector
-    _right = glm::normalize(glm::cross(_front, _worldUp));  // Normalize t
+    _right = glm::normalize(glm::cross(_front, _worldUp));
 	_up = glm::normalize(glm::cross(_right, _front));
 }
 
@@ -114,7 +114,10 @@ void Camera::handleRotationEvents(const SDL_Event &sdlEvent, const SDL_bool &rel
 	}
 }
 
-
+void Camera::setSize(const glm::ivec2 &size) {
+	_screenWidth = size.x;
+	_screenHeigh =size.y;
+}
 glm::mat4 Camera::PVMatrix() const {
 	return projectionMatrix() * viewMatrix();
 }

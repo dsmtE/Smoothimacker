@@ -32,6 +32,8 @@ namespace openGL {
 		glm::ivec2 getMouseCoord() const;
         glm::ivec2 windowSize() const;
 
+        void onWindowResize();
+
         inline void exit() { _running = false; };
         inline bool isRunning() const { return _running; };
 

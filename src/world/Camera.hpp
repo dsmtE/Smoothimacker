@@ -102,6 +102,9 @@ namespace world {
 		///\return glm::vec3 
 		inline glm::vec3 getPos() const { return _position; };
 
+		///\brief Set the new size for projection matrix
+		///\param size
+		void setSize(const glm::ivec2 &size);
 		// input fonctions
 		
 		///\brief delegated function that manages the camera's movements events
