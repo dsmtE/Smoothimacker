@@ -24,7 +24,7 @@ namespace openGL {
         GLuint compileShader(const GLenum &shaderType, const std::string &shaderStr);
         std::string parseFile(const char* filepath);
         std::string shaderTypeStr(const GLenum &shaderType);
-        void Shader::AttachShaderId(const char* shaderName, const GLuint id);
+        void AttachShaderId(const char* shaderName, const GLuint id);
 
     public:
 

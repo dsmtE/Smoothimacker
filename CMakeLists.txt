@@ -2,9 +2,9 @@
 # ///////////////////////////////// SETTINGS //////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 # 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.7)
 project(Smoothimacker C CXX)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 # set(default_build_type "Release")
 
 # used for find SDL & others libs on windows
@@ -48,7 +48,18 @@ endif()
 
 # ////////// SDL2 ////////// #
 
-find_package(SDL2 REQUIRED)
+# On windows
+if (WIN32)
+	set(SDL2_DIR ${CMAKE_SOURCE_DIR}/libs/SDL2-2.0.10)
+
+	set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include)
+	set(SDL2_LIBRARIES ${SDL2_DIR}/lib/x64/SDL2main.lib;${SDL2_DIR}/lib/x64/SDL2.lib)
+	set(SDL2_DLLS ${SDL2_DIR}/lib/x64/SDL2.dll)
+# On linux
+else()
+    find_package(SDL2 REQUIRED)
+endif()
+
 
 # ////////// BUILD OTHERS DEPENDENCIES IF NEEDED ////////// #
 
@@ -68,7 +79,7 @@ add_library(IMGUI STATIC ${IMGUI_SOURCES})
 
 include_directories(
     ${OPENGL_INCLUDE_DIR} 
-    ${SDL2_INCLUDE_DIR}
+    ${SDL2_INCLUDE_DIRS}
     libs/glad/include # for glad
 	libs #for glm & imgui
     ${EIGEN3_INCLUDE_DIR}

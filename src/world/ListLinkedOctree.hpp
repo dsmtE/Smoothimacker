@@ -38,7 +38,7 @@ namespace world {
 		bool hasChildren() const;
 		inline bool isLeaf() const { return _depth == 0; };
 		inline Octree<T>* getParent() const { return _parent; };
-		inline unsigned int size() const { return unsigned int(1 << _depth); };
+		inline unsigned int size() const { return (unsigned int)(1 << _depth); };
 		inline uint8_t depth() const { return _depth; };
 		inline unsigned int capacity() const { unsigned int s = size(); return s * s * s; }
 
@@ -154,7 +154,7 @@ namespace world {
 	bool ListLinkedOctree<T>::setValue(const glm::uvec3& pos, const T& val) {
 		unsigned int** idPtr = _octree.getOrCreateValue(pos);
 		if (*idPtr == nullptr) {
-			_data.emplace_back(_val); // alocate new value using copy constructor
+			_data.emplace_back(val); // alocate new value using copy constructor
 			*idPtr = new unsigned int(_data.size()); // create nw in octree (new using reference)(destroyed in octree destructor)
 			_valueOctreePtr.push_back(idPtr); // save ptr to ptr to id in octree coresponding to value in data vector
 		}
