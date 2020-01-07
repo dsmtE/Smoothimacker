@@ -4,7 +4,7 @@
 # 
 cmake_minimum_required(VERSION 3.7)
 project(Smoothimacker C CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 # set(default_build_type "Release")
 
 # used for find SDL & others libs on windows
@@ -17,7 +17,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
 # ////////////////////////////// PROJECT FILES ////////////////////////////////
 # /////////////////////////////////////////////////////////////////////////////
 
-set(MAIN_FILES ${PROJECT_SOURCE_DIR}/src/Smoothimacker.cpp ${PROJECT_SOURCE_DIR}/src/Test.cpp)
+set(MAIN_FILES ${PROJECT_SOURCE_DIR}/src/Smoothimacker.cpp)
 
 file(GLOB_RECURSE SRC_FILES  ${PROJECT_SOURCE_DIR}/src/*.cpp )
 
