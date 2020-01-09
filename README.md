@@ -4,7 +4,7 @@ projet S3 IMAC openGL
 
 ## comment build le projet
 
-Il faut dans un proemier temps installer CMake (3.7 or higher)  : https://cmake.org/download/
+Installez CMake (3.7 or higher)  : https://cmake.org/download/
 
 Sur windows via Visual Studio Code : 
 
