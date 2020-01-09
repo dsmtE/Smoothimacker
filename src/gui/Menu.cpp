@@ -193,10 +193,6 @@ void Menu::drawMenuBar() {
 		}
 
 		if (ImGui::BeginMenu("Scene Options")) {
-
-			ImGui::Checkbox("enable rayCasting", &(_settings->_rayCastingEnable));
- 
-			ImGui::Separator();
 		
 			ImGui::Text("Night"); ImGui::SameLine();
 			ImGui::SliderFloat("", &(_settings->_dayMode), 0.0f, 1.0f);
